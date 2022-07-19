@@ -24,6 +24,17 @@ export class GoblinSaxAPI{
 
     }
 
+    async getWhitelist(){
+        let res;
+
+        if (this.version == 'MAINNET') 
+            res = await axios.get('https://api.goblinsax.xyz/collections/')
+        else if (this.version == 'RINKEBY')
+            res = await axios.get('https://api.goblinsax.xyz/rinkeby_collections/')
+        
+        return res.data
+    }
+
     async getTerms(collection, id){
         let erc721_contract = new ethers.Contract( collection , ERC721_ABI , this.provider )
 
