@@ -21,11 +21,12 @@ export class GoblinSaxAPI{
             throw new Error("version must be one of RINKEBY or MAINNET")
         }
 
-        this.erc721_contract = new ethers.Contract( collection , ERC721_ABI , this.provider )
 
     }
 
     async getTerms(collection, id){
+        let erc721_contract = new ethers.Contract( collection , ERC721_ABI , this.provider )
+
         let res = await axios.get(`${this.ENDPOINT}/api/get-loan-terms?address=${collection}&id=${id}`, {headers: {'x-api-key': this.apiKey}})
         
         if (res['data']['success'] == true){
@@ -36,12 +37,14 @@ export class GoblinSaxAPI{
         }
     }
 
-    async checkApproved(){
-        return await this.erc721_contract.isApprovedForAll(this.provider.address, this.nftfi)
+    async checkApproved(collection){
+        let erc721_contract = new ethers.Contract( collection , ERC721_ABI , this.provider )
+        return await erc721_contract.isApprovedForAll(this.provider.address, this.nftfi)
     }
 
-    async approveSpending(){
-        await this.erc721_contract.setApprovalForAll(this.nftfi, true)
+    async approveSpending(collection){
+        let erc721_contract = new ethers.Contract( collection , ERC721_ABI , this.provider )
+        await erc721_contract.setApprovalForAll(this.nftfi, true)
     }
 
     async beginLoan(collection, id, duration, borrowerAddress, principal, apr, referral){

@@ -17,13 +17,11 @@ async function main(collection, id, duration){
     let provider = new ethers.providers.InfuraProvider("rinkeby", process.env.INFURA_API)
     let signer = new ethers.Wallet(process.env.ETH_KEY, provider);
 
-
-
     let gs = new GoblinSaxAPI(signer, process.env.GS_RINKEBY_API, 'RINKEBY')
     let terms = await gs.getTerms(collection, id)
 
-    if (await gs.checkApproved() == false){
-        await gs.approveSpending()
+    if (await gs.checkApproved(collection) == false){
+        await gs.approveSpending(collection)
     }
 
     let sel = terms['offers'][String(duration)][0]
@@ -31,4 +29,4 @@ async function main(collection, id, duration){
 }
 
 
-main('0xf5de760f2e916647fd766B4AD9E85ff943cE3A2b', 	1274211, 7)
+main('0xf5de760f2e916647fd766B4AD9E85ff943cE3A2b', 	1274212, 7)
