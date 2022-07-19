@@ -35,17 +35,12 @@ export class GoblinSaxAPI{
 
     async beginLoan(collection, id, duration, borrowerAddress, principal, apr, referral){
         let url = `${this.ENDPOINT}/api/create-offer?address=${collection}&id=${id}&duration=${duration}&borrowerAddress=${borrowerAddress}&principal=${principal}&apr=${apr}`
-        
-        console.log(url)
         let res = await axios.get(url, {headers: {'x-api-key': this.apiKey}})
         
         if (res['data']['success'] == true){
-            let loan = res['data']['body']
-            console.log(loan)
-            let loan_details = loan['result']['terms']['loan']
-            console.log()
+            
 
-            let nftfi_contract = new ethers.Contract( this.nftfi , NFTFI_ABI , this.provider )
+
             let erc721_contract = new ethers.Contract( collection , ERC721_ABI , this.provider )
 
             let approved = await erc721_contract.isApprovedForAll(this.provider.address, this.nftfi)
@@ -54,12 +49,20 @@ export class GoblinSaxAPI{
                 console.log("Approving")
                 await erc721_contract.setApprovalForAll(this.nftfi, true)
             }
-
-            let offer = {loanPrincipalAmount: loan_details['principal'], maximumRepaymentAmount: loan_details['repayment'], nftCollateralId: loan['result']['nft']['id'], nftCollateralContract: loan['result']['nft']['address'], loanDuration: loan_details['duration'], loanAdminFeeInBasisPoints: loan['result']['nftfi']['fee'], loanERC20Denomination: loan_details['currency'], referrer: loan['result']['referrer']['address']}
-            let BorrowerSettings = {revenueSharePartner: loan['result']['nftfi']['fee'], referralFeeInBasisPoints: 0} //will likely be modified
             
-            console.log(this.nftfi)
-            await nftfi_contract.acceptOffer(offer, loan['result']['signature'], BorrowerSettings) //this will create the loans
+            let nftfi_contract = new ethers.Contract( this.nftfi , NFTFI_ABI , this.provider )
+
+            let loan = res['data']['body']
+            let loan_details = loan['result']['terms']['loan']
+            
+            console.log(loan, loan_details)
+            
+            let offer = {loanPrincipalAmount: loan_details['principal'], maximumRepaymentAmount: loan_details['repayment'], nftCollateralId: loan['result']['nft']['id'], nftCollateralContract: loan['result']['nft']['address'], loanDuration: loan_details['duration'], loanAdminFeeInBasisPoints: loan['result']['nftfi']['fee']['bps'], loanERC20Denomination: loan_details['currency'], referrer: loan['result']['referrer']['address']}
+            let BorrowerSettings = {revenueSharePartner: loan['result']['referrer']['address'], referralFeeInBasisPoints: 0} //will likely be modified
+            let signature = {nonce: loan['result']['lender']['nonce'], expiry: loan_details['expiry'], signer: loan['result']['lender']['address'], signature: loan['result']['signature']}
+            
+            
+            await nftfi_contract.acceptOffer(offer, signature, BorrowerSettings) //this will create the loans
         }
         else{
             throw new Error(res['data']['message'])
