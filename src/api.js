@@ -81,7 +81,6 @@ export class GoblinSaxAPI{
         let all_loans = {}
 
         for (let collection of collections){
-            console.log(collection)
             let id = collection['title'].split(" ")[2].replace("#", "")
             let loan = await this.nftfi_contract.loanIdToLoan(id)
             if (loan['borrower'].toLowerCase() == this.provider.address.toLowerCase()){
@@ -109,8 +108,12 @@ export class GoblinSaxAPI{
     }
 
     async checkApprovedNFT(collection){
+        try{
         let erc721_contract = new ethers.Contract( collection , ERC721_ABI , this.provider )
         return await erc721_contract.isApprovedForAll(this.provider.address, this.nftfi)
+        } catch {
+            return false
+        }
     }
 
     async approveSpendingNFT(collection){

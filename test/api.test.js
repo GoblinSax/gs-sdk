@@ -20,7 +20,46 @@ describe('API Tests', function () {
     new GoblinSaxAPI(signer, process.env.GS_RINKEBY_API, 'MAINNET') //no error
   });
 
-  it(`Check Approval`, function () {
-    gs.checkApprovedNFT("")
+  it('Whitelist', async () => {
+    let whitelist = await gs.getWhitelist()
+    assert.equal(Object.values(whitelist)[0], "multifaucet-nft-q55yxxitoz")
+    assert.equal(Object.keys(whitelist)[0], "0xf5de760f2e916647fd766B4AD9E85ff943cE3A2b")
+    console.log(whitelist)
   });
+
+  it('Check Approval', async () => {
+    await gs.approveSpendingNFT("0xf5de760f2e916647fd766b4ad9e85ff943ce3a2b")
+    //Manually ensure this is the case for ETH_KEY
+
+    assert.equal(await gs.checkApprovedNFT("0xf5de760f2e916647fd766b4ad9e85ff943ce3a2b"), true) 
+    assert.equal(await gs.checkApprovedNFT("0x8e9269bbd0a6e7a3817048e9f9199c5542257ded"), false) 
+  });
+
+  it('Get Loans', async () => {
+    let allLoans = await gs.getLoans(process.env.ALCHEMY_API)
+    
+    console.log(allLoans)
+    
+    for (let item_id in allLoans){
+      // console.log(item_id)
+    }
+  });
+
+  it('Loan Terms', async () => {
+
+    let terms = await gs.getTerms('0xf5de760f2e916647fd766b4ad9e85ff943ce3a2b', 1)
+    assert.equal(terms.price, 0.1)
+    console.log(terms['offers']['7'])
+    assert.equal(terms['offers']['7'][0]['LTV'], 0.1) //only format needs to be checked here
+    assert.equal(terms['offers']['7'][0]['APR'], 10) 
+
+  });
+
+  it('Create and Repay Loans',async () => {
+
+
+
+  })
+
+
 })

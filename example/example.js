@@ -61,7 +61,7 @@ async function main(network){
         await createLoan(gs, curr['collection'],  curr['id'], 7)
 
         console.log("Created a loan. Sleeping 30 seconds for transaction to confirm")
-        // await new Promise(r => setTimeout(r, 30 * 1000));
+        await new Promise(r => setTimeout(r, 30 * 1000));
     
         //get current loans
         let allLoans = await gs.getLoans(process.env.ALCHEMY_API)
