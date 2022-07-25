@@ -37,28 +37,25 @@ describe('API Tests', function () {
 
   it('Get Loans', async () => {
     let allLoans = await gs.getLoans(process.env.ALCHEMY_API)
-    
-    console.log(allLoans)
-    
+        
     for (let item_id in allLoans){
-      // console.log(item_id)
+      assert.equal(Number.isInteger(parseInt(item_id)), true) 
+      assert.equal(allLoans[item_id]['loanDuration'] > 0, true) //as data is direct from niftfi contract, just checking that data is being received
     }
   });
 
   it('Loan Terms', async () => {
-
+    this.timeout(5000);
     let terms = await gs.getTerms('0xf5de760f2e916647fd766b4ad9e85ff943ce3a2b', 1)
     assert.equal(terms.price, 0.1)
     console.log(terms['offers']['7'])
-    assert.equal(terms['offers']['7'][0]['LTV'], 0.1) //only format needs to be checked here
+    assert.equal(terms['offers']['7'][0]['LTV'], 0.1)
     assert.equal(terms['offers']['7'][0]['APR'], 10) 
 
   });
 
   it('Create and Repay Loans',async () => {
-
-
-
+    //tested on the hardhat fork repository linked and on example/
   })
 
 

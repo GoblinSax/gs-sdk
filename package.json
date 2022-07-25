@@ -1,6 +1,6 @@
 {
   "name": "@goblinsax/gs-sdk",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "SDK to take loan from Goblin Sax for user's NFT",
   "main": "src/index.js",
   "type": "module",
