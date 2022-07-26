@@ -3,12 +3,10 @@
 A javascript library to take loans on NFTs from Goblin Sax. The Goblin Sax SDK requires Goblin Sax API Key. [Contact Us](https://discord.com/invite/GS6rvrvb9B) if you don't have it.
 
 ## Install
-
-**ESM:**
 > npm i @goblinsax/gs-sdk
 
-or
-
+## Custom Install
+**ESM:**:
 > npm run build:esm
 
 **Common JS:**
@@ -17,7 +15,7 @@ or
 Now link the packages/ directory to your desired repo.
 
 ## Example
-Refer to examples/example.js for a complete flow -- getting the goblin sax whitelist, creating a loan and repaying it.
+Refer to examples/example.js for a complete flow -- getting the goblin sax whitelist, creating a loan and repaying it. 
 
 ## Getting Started
     import { GoblinSaxAPI } from "@goblinsax/gs-sdk";
@@ -82,6 +80,7 @@ Returns all active loans done by the user. Alchemy API is used for this purpose 
  The loanId to repay from must be passed to create the repayment.
 
 ## Tests
-Tests are done on the Rinkeby network and makes assumptions about the state of the wallet. After the environment variables are set and assumptions verified, tests can be run using:
+Local Tests are done on the Rinkeby network and makes assumptions about the state of the wallet. After the environment variables are set and assumptions verified, tests can be run using:
 > npm test
   
+A more advanced test on hardhat fork with every details is in example/forked-loan
