@@ -22,14 +22,15 @@ An example Next JS app for getting the goblin sax whitelist, creating a loan and
 
 An ethers provider, Goblin Sax API key and the current network ("RINKEBY" or "MAINNET") should be passed to instantiate the API.
 
-**ESM:**
+**ESM:**  
+
     import { GoblinSaxAPI } from "@goblinsax/gs-sdk";
     let gs = new GoblinSaxAPI(<ethers-provider>, <goblin-sax-api-key>, <MAINNET | RINKEBY>)
 
 **CommonJS:**
+  
     const { GoblinSaxAPI } = require("@goblinsax/gs-sdk");
     let gs = new GoblinSaxAPI(<ethers-provider>, <goblin-sax-api-key>, <MAINNET | RINKEBY>)
-
 
 
 #### `gs.getWhitelist()`
