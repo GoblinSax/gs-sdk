@@ -1,30 +1,25 @@
 
-  
-
-# Goblin Sax SDK
-
-  
-
+  # Goblin Sax SDK
 A javascript library to take loans on NFTs from Goblin Sax. The Goblin Sax SDK requires Goblin Sax API Key. [Contact Us](https://discord.com/invite/GS6rvrvb9B) if you don't have it.
-
-  
 
 ## Install
 
+**ESM:**
 > npm i @goblinsax/gs-sdk
 
-  
+or
+
+> npm run build:esm
+
+**Common JS:**
+> npm run build:cjs
+
+Now link the packages/ directory to your desired repo.
 
 ## Example
-
 Refer to examples/example.js for a complete flow -- getting the goblin sax whitelist, creating a loan and repaying it.
 
-  
-
 ## Getting Started
-
-  
-
     import { GoblinSaxAPI } from "@goblinsax/gs-sdk";
     let gs = new GoblinSaxAPI(<ethers-provider>, <goblin-sax-api-key>, <MAINNET | RINKEBY>)
 

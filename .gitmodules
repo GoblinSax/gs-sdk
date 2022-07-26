@@ -1,0 +1,3 @@
+[submodule "example/forked-loan"]
+	path = example/forked-loan
+	url = git@github.com:GoblinSax/forked-loan.git

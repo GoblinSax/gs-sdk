@@ -109,9 +109,11 @@ export class GoblinSaxAPI{
 
     async checkApprovedNFT(collection){
         try{
-        let erc721_contract = new ethers.Contract( collection , ERC721_ABI , this.provider )
-        return await erc721_contract.isApprovedForAll(this.provider.address, this.nftfi)
-        } catch {
+            let erc721_contract = new ethers.Contract( collection , ERC721_ABI , this.provider )
+            return await erc721_contract.isApprovedForAll(this.provider.address, this.nftfi)
+        } 
+        catch (error) 
+        {
             return false
         }
     }
