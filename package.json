@@ -2,17 +2,15 @@
   "name": "@goblinsax/gs-sdk",
   "version": "1.0.6",
   "description": "SDK to take loan from Goblin Sax for user's NFT",
-  "main": "packages/cjs/index.js",
-  "module": "packages/esm/index.js",
+
   "exports": {
-    "require": "./packages/cjs/index.js",
-    "import": "./packages/esm/index.js"
-  },  
-  "type": "module",
+        "require": "./packages/cjs/index.cjs",
+        "import": "./packages/esm/index.js"
+    },  
+    "type": "module",
   "scripts": {
     "test": "mocha",
-    "build:cjs": "babel --plugins @babel/plugin-transform-modules-commonjs src --extensions '.js' --out-dir 'packages/cjs'",
-    "build:esm": "babel src --extensions '.js' --out-dir 'packages/esm'"
+    "build": "babel --plugins @babel/plugin-transform-modules-commonjs src --extensions '.js' --out-dir 'packages/cjs' --out-file-extension .cjs"
   },
   "repository": {
     "type": "git",
