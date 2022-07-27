@@ -2,6 +2,7 @@
   # Goblin Sax SDK
 A javascript library to take loans on NFTs from Goblin Sax. The Goblin Sax SDK requires Goblin Sax API Key. [Contact Us](https://discord.com/invite/GS6rvrvb9B) if you don't have it.
 
+Please note that the SDK is undergoing heavy changes and is in beta. Use at your own risk.
 ## Install
 > npm i @goblinsax/gs-sdk
 
@@ -10,7 +11,7 @@ A javascript library to take loans on NFTs from Goblin Sax. The Goblin Sax SDK r
 
 ## Example
 **examples/example.js:** 
-ESM script for getting the goblin sax whitelist, creating a loan and repaying it. 
+ECMA script for getting the goblin sax whitelist, creating a loan and repaying it. 
 
 **example/forked-loan:**
 For a hardhat test on the mainnet fork using CommonJS.
@@ -22,7 +23,7 @@ An example Next JS app for getting the goblin sax whitelist, creating a loan and
 
 An ethers provider, Goblin Sax API key and the current network ("RINKEBY" or "MAINNET") should be passed to instantiate the API.
 
-**ESM:**  
+**ECMA:**  
 
     import { GoblinSaxAPI } from "@goblinsax/gs-sdk";
     let gs = new GoblinSaxAPI(<ethers-provider>, <goblin-sax-api-key>, <MAINNET | RINKEBY>)
