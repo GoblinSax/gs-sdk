@@ -134,6 +134,7 @@ export class GoblinSaxAPI{
                         
             let offer = {loanPrincipalAmount: loan_details['principal'], maximumRepaymentAmount: loan_details['repayment'], nftCollateralId: loan['result']['nft']['id'], nftCollateralContract: loan['result']['nft']['address'], loanDuration: loan_details['duration'], loanAdminFeeInBasisPoints: loan['result']['nftfi']['fee']['bps'], loanERC20Denomination: loan_details['currency'], referrer: loan['result']['referrer']['address']}
             let BorrowerSettings = {revenueSharePartner: loan['result']['referrer']['address'], referralFeeInBasisPoints: 0} //will likely be modified
+            
             let signature = {nonce: loan['result']['lender']['nonce'], expiry: loan_details['expiry'], signer: loan['result']['lender']['address'], signature: loan['result']['signature']}
 
             await this.nftfi_contract.acceptOffer(offer, signature, BorrowerSettings) //this will create the loans
