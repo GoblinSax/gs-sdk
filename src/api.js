@@ -41,8 +41,6 @@ export class GoblinSaxAPI{
     }
 
     async getTerms(collection, id){
-        let erc721_contract = new ethers.Contract( collection , ERC721_ABI , this.provider )
-
         let res = await axios.get(`${this.ENDPOINT}/api/get-loan-terms?address=${collection}&id=${id}`, {headers: {'x-api-key': this.apiKey}})
         
         if (res['data']['success'] == true){
