@@ -125,7 +125,7 @@ export class GoblinSaxAPI {
         }
     }
 
-    async beginLoan(collection, id, duration, borrowerAddress, principal, apr, referral) {
+    async beginLoan(collection, id, duration, borrowerAddress, principal, apr) {
         principal = principal.toLocaleString('fullwide', { useGrouping: false })
         let url = `${this.ENDPOINT}/api/create-offer?address=${collection}&id=${id}&duration=${duration}&borrowerAddress=${borrowerAddress}&principal=${principal}&apr=${apr}`
         let res = await axios.get(url, { headers: { 'x-api-key': this.apiKey } })
