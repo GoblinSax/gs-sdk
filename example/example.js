@@ -21,7 +21,7 @@ async function createLoan(gs, collection, id, duration){
     }
 
     let sel = terms['offers'][String(duration)][0]
-    let loan = await gs.beginLoan(collection, id, duration, "0xb645001fc19bafec83c1ef2cb3bc3516c7e0916c", terms['price'] * 10**18 * sel['LTV'], sel['APR'], "0x0000000000000000000000000000000000000000")
+    await gs.beginLoan(collection, id, duration, "0xb645001fc19bafec83c1ef2cb3bc3516c7e0916c", terms['price'] * 10**18 * sel['LTV'], sel['APR'], "0x0000000000000000000000000000000000000000")
 
 }
 
