@@ -1,16 +1,11 @@
 import { GoblinSaxAPI } from "@goblinsax/gs-sdk";
 import { ethers } from "ethers";
 import axios from 'axios';
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 /*
-The following environment variables must be set for this to function properly:
-
-**ETH_KEY:** Ethereum Private Key (starting with 0x) of user's account. In a browser implementation, this will user's wallet instead of private key
-**GS_RINKEBY_API:** API for GS endpoint
-**ALCHEMY_API:** Alchemy API
-
-Alternatively you can hardcore this or implement this differently.
-
+    .env-example must be set to make this work
 */
 
 async function createLoan(gs, collection, id, duration){
@@ -21,7 +16,7 @@ async function createLoan(gs, collection, id, duration){
     }
 
     let sel = terms['offers'][String(duration)][0]
-    let loan = await gs.beginLoan(collection, id, duration, "0xb645001fc19bafec83c1ef2cb3bc3516c7e0916c", terms['price'] * 10**18 * sel['LTV'], sel['APR'], "0x0000000000000000000000000000000000000000")
+    let loan = await gs.beginLoan(collection, id, duration, "0xf5de760f2e916647fd766B4AD9E85ff943cE3A2b", terms['price'] * 10**18 * sel['LTV'], sel['APR'], "0x0000000000000000000000000000000000000000")
 
 }
 
@@ -30,7 +25,7 @@ async function main(network){
     let signer = new ethers.Wallet(process.env.ETH_KEY, provider);
 
 
-    let gs = new GoblinSaxAPI(signer, process.env.GS_RINKEBY_API, network)
+    let gs = new GoblinSaxAPI(signer, "", network)
 
     let whitelist = await gs.getWhitelist()
 
@@ -38,7 +33,7 @@ async function main(network){
 
     if (network == 'MAINNET') 
         owned_nfts = await axios.get(`https://api.opensea.io/api/v1/assets?owner=${signer.address}`)
-    else if (network == 'RINKEBY')
+    else if (network == 'GOERLI')
         owned_nfts = await axios.get(`https://testnets-api.opensea.io/api/v1/assets?format=json&owner=${signer.address}`)
 
 
@@ -84,4 +79,4 @@ async function main(network){
 }
 
 
-main('RINKEBY')
+main('GOERLI')
