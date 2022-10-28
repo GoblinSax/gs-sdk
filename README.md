@@ -28,9 +28,6 @@ ECMA script for getting the goblin sax whitelist, creating a loan and repaying i
 **example/forked-loan:**
 For a hardhat test on the mainnet fork using CommonJS.
 
-**example/loan-app:**
-An example Next JS app for getting the goblin sax whitelist, creating a loan and repaying it. 
-
 ## Getting Started
 
 An ethers provider, Goblin Sax API key and the current network ("GOERLI" or "MAINNET") should be passed to instantiate the API.
