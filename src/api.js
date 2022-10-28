@@ -8,20 +8,22 @@ export class GoblinSaxAPI{
         this.apiKey = apiKey
         this.version = version
 
-        if (this.version == 'RINKEBY'){
-            this.nftfi = "0x33e75763F3705252775C5AEEd92E5B4987622f44"
-            this.ENDPOINT = "https://sdm6h8zgmd.execute-api.us-east-1.amazonaws.com/prod"
-            this.note = "0x191b74d99327777660892b46a7c94ca25c896dc7"
-            this.weth = "0xc778417e063141139fce010982780140aa0cd5ab"
+        console.log(this.version)
+
+        if (this.version == 'GOERLI'){
+            this.nftfi = "0x77097f421CEb2454eB5F77898d25159ff3C7381d"
+            this.ENDPOINT = "https://0em9k7cjm4.execute-api.us-east-1.amazonaws.com/prod"
+            this.note = "0x88bffd4154ecf7545741bf6f3ec9f7e2e11602db"
+            this.weth = "0x0bb7509324ce409f7bbc4b701f932eaca9736ab7"
         }
         else if (this.version == 'MAINNET'){
-            this.nftfi = "0xf896527c49b44aAb3Cf22aE356Fa3AF8E331F280"
+            this.nftfi = "0x8252df1d8b29057d1afe3062bf5a64d503152bc8"
             this.ENDPOINT = "https://atuz4790j2.execute-api.us-east-1.amazonaws.com/prod"
             this.note = "0x5660e206496808f7b5cdb8c56a696a96ae5e9b23"
             this.weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
         }
         else {
-            throw new Error("version must be one of RINKEBY or MAINNET")
+            throw new Error("version must be one of GOERLI or MAINNET")
         }
 
         this.address = ""
@@ -34,8 +36,8 @@ export class GoblinSaxAPI{
 
         if (this.version == 'MAINNET') 
             res = await axios.get('https://api.goblinsax.xyz/collections/')
-        else if (this.version == 'RINKEBY')
-            res = await axios.get('https://api.goblinsax.xyz/rinkeby_collections/')
+        else if (this.version == 'GOERLI')
+            res = await axios.get('https://api.goblinsax.xyz/collections_goerli/')
         
         return res.data
     }
@@ -60,8 +62,8 @@ export class GoblinSaxAPI{
     async getLoans(apiKey){
         let baseURL;
 
-        if (this.version == 'RINKEBY'){           
-            baseURL = `https://eth-rinkeby.alchemyapi.io`;
+        if (this.version == 'GOERLI'){           
+            baseURL = `https://eth-goerli.alchemyapi.io`;
         } else if (this.version == 'MAINNET'){
             baseURL = `https://eth-mainnet.alchemyapi.io`;
         }        

@@ -9,20 +9,20 @@ let signer;
 describe('API Tests', function () {
   
   before(function () {
-    provider = new ethers.providers.InfuraProvider ("rinkeby", process.env.INFURA_API )
+    provider = new ethers.providers.InfuraProvider ("GOERLI", process.env.INFURA_API )
     signer = new ethers.Wallet(process.env.ETH_KEY, provider);
-    gs = new GoblinSaxAPI(signer, process.env.GS_RINKEBY_API, 'RINKEBY')
+    gs = new GoblinSaxAPI(signer, process.env.GS_GOERLI_API, 'GOERLI')
   });
 
   it(`Initialization`, function () {
-    assert.throws(function () { new GoblinSaxAPI(signer, process.env.GS_RINKEBY_API, 'XXX') }, Error, "Error: version must be one of RINKEBY or MAINNET");
-    new GoblinSaxAPI(signer, process.env.GS_RINKEBY_API, 'RINKEBY') //no error
-    new GoblinSaxAPI(signer, process.env.GS_RINKEBY_API, 'MAINNET') //no error
+    assert.throws(function () { new GoblinSaxAPI(signer, process.env.GS_GOERLI_API, 'XXX') }, Error, "Error: version must be one of GOERLI or MAINNET");
+    new GoblinSaxAPI(signer, process.env.GS_GOERLI_API, 'GOERLI') //no error
+    new GoblinSaxAPI(signer, process.env.GS_GOERLI_API, 'MAINNET') //no error
   });
 
   it('Whitelist', async () => {
     let whitelist = await gs.getWhitelist()
-    assert.equal(Object.values(whitelist)[0], "multifaucet-nft-q55yxxitoz")
+    assert.equal(Object.values(whitelist)[0], "multifaucet-nft-v4")
     assert.equal(Object.keys(whitelist)[0], "0xf5de760f2e916647fd766B4AD9E85ff943cE3A2b")
     console.log(whitelist)
   });

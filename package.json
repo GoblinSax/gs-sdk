@@ -1,6 +1,6 @@
 {
   "name": "@goblinsax/gs-sdk",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "SDK to take loan from Goblin Sax for user's NFT",
   "exports": {
     "require": "./packages/cjs/index.cjs",
@@ -29,7 +29,9 @@
     "mocha": "^10.0.0"
   },
   "dependencies": {
+    "@babel/core": "^7.19.6",
     "axios": "^0.27.2",
+    "babel-plugin-transform-rename-import": "^2.3.0",
     "ethers": "^5.6.9"
   }
 }
