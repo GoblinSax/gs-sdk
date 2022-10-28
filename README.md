@@ -9,7 +9,17 @@ Please note that the SDK is undergoing heavy changes and is in beta. Use at your
 > npm i @goblinsax/gs-sdk
 
 ## Custom Install
+Install dev dependecies:
+>npm install --dev
+
+Then build using:
 > npm run build
+
+## Tests
+Copy .env-example and create .env. Tests are done on the GOERLI network and makes assumptions about the state of the wallet. After the environment variables are set and assumptions verified, tests can be run using:
+> npm test
+
+A more advanced test on hardhat fork with every details is in example/forked-loan
 
 ## Example
 **examples/example.js:** 
@@ -23,17 +33,17 @@ An example Next JS app for getting the goblin sax whitelist, creating a loan and
 
 ## Getting Started
 
-An ethers provider, Goblin Sax API key and the current network ("RINKEBY" or "MAINNET") should be passed to instantiate the API.
+An ethers provider, Goblin Sax API key and the current network ("GOERLI" or "MAINNET") should be passed to instantiate the API.
 
 **ECMA:**  
 
     import { GoblinSaxAPI } from "@goblinsax/gs-sdk";
-    let gs = new GoblinSaxAPI(<ethers-provider>, <goblin-sax-api-key>, <MAINNET | RINKEBY>)
+    let gs = new GoblinSaxAPI(<ethers-provider>, <goblin-sax-api-key>, <MAINNET | GOERLI>)
 
 **CommonJS:**
   
     const { GoblinSaxAPI } = require("@goblinsax/gs-sdk");
-    let gs = new GoblinSaxAPI(<ethers-provider>, <goblin-sax-api-key>, <MAINNET | RINKEBY>)
+    let gs = new GoblinSaxAPI(<ethers-provider>, <goblin-sax-api-key>, <MAINNET | GOERLI>)
 
 
 #### `gs.getWhitelist()`
@@ -91,9 +101,3 @@ Returns all active loans done by the user. Alchemy API is used for this purpose 
 >     }
 #### `gs.repayLoan(loanId)`
  The loanId to repay from must be passed to create the repayment.
-
-## Tests
-Local Tests are done on the Rinkeby network and makes assumptions about the state of the wallet. After the environment variables are set and assumptions verified, tests can be run using:
-> npm test
-  
-A more advanced test on hardhat fork with every details is in example/forked-loan

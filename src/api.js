@@ -8,8 +8,6 @@ export class GoblinSaxAPI{
         this.apiKey = apiKey
         this.version = version
 
-        console.log(this.version)
-
         if (this.version == 'GOERLI'){
             this.nftfi = "0x77097f421CEb2454eB5F77898d25159ff3C7381d"
             this.ENDPOINT = "https://0em9k7cjm4.execute-api.us-east-1.amazonaws.com/prod"
