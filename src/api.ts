@@ -3,7 +3,8 @@ import { BigNumber, ethers } from "ethers";
 import NFTFI_ABI from "./abis/nftfi.json";
 import ERC721_ABI from "./abis/erc721.json";
 import ERC20_ABI from "./abis/erc20.json";
-import { Nftfi, Erc20, Erc721 } from "../types/typechain";
+import BNPL from "./abis/bnpl.json";
+import { Nftfi, Erc20, Erc721, Bnpl } from "../types/typechain";
 
 import {
   GS_API_Collections,
@@ -29,6 +30,7 @@ export class GoblinSaxAPI {
   weth: string;
   weth_contract: Erc20;
   bnpl: string;
+  bnpl_contract: Bnpl;
   os_module: string;
 
   constructor(
@@ -83,6 +85,12 @@ export class GoblinSaxAPI {
       ERC20_ABI,
       this.signer
     ) as Erc20;
+
+    this.bnpl_contract = new ethers.Contract(
+      this.bnpl,
+      BNPL,
+      this.signer
+    ) as Bnpl;
   }
 
   async getWhitelist(): Promise<GS_API_Collections> {
@@ -260,5 +268,115 @@ export class GoblinSaxAPI {
     );
 
     await this.nftfi_contract.acceptOffer(offer, signature, borrowerSettings); //this will create the loan
+  }
+
+  async getOSListing(collection: string, assetId: string) {
+    const osApiUrl = `${this.os_api}/listings?asset_contract_address=${collection}&token_ids=${assetId}&limit=1`;
+    let osRes = await axios.get(osApiUrl);
+    let listing = osRes.data.orders[0];
+
+    if (!listing) {
+      throw new Error("Listing not found for asset provided");
+    }
+
+    return listing;
+  }
+
+  async bnplOS(
+    collection: string,
+    assetId: string,
+    duration: string,
+    borrowerAddress: string,
+    principal: string,
+    apr: number
+  ) {
+    const listing = await this.getOSListing(collection, assetId);
+    const offer = await this.createOffer(
+      collection,
+      assetId,
+      duration,
+      borrowerAddress,
+      principal,
+      apr
+    );
+
+    const osBuyData = ethers.utils.defaultAbiCoder.encode(
+      [
+        `tuple(
+        address,
+        uint256,
+        uint256,
+        address,
+        address,
+        address,
+        uint256,
+        uint256,
+        uint8,
+        uint256,
+        uint256,
+        bytes32,
+        uint256,
+        bytes32,
+        bytes32,
+        uint256,
+        tuple(uint256 amount,address recipient)[],
+        bytes
+      )`,
+      ],
+      [
+        [
+          listing.protocol_data.parameters.consideration[0].token, // considerationToken
+          0, // considerationIdentifier
+          listing.protocol_data.parameters.consideration[0].startAmount, // considerationAmount
+          listing.protocol_data.parameters.offerer, // offererN
+          listing.protocol_data.parameters.zone, // zone
+          listing.protocol_data.parameters.offer[0].token, // offerToken
+          listing.protocol_data.parameters.offer[0].identifierOrCriteria, // offerIdentifier
+          1, // offerAmount
+          8, // basicOrderType - ERC721 paying with ERC20
+          listing.protocol_data.parameters.startTime, // startTime
+          listing.protocol_data.parameters.endTime, // endTime
+          listing.protocol_data.parameters.zoneHash, // zoneHash
+          listing.protocol_data.parameters.salt, // salt
+          listing.protocol_data.parameters.conduitKey, // offererConduitKey
+          "0x0000000000000000000000000000000000000000000000000000000000000000", // fulfillerConduitKey
+          listing.protocol_data.parameters.consideration.length - 1, // totalOriginalAdditionalRecipients
+          listing.protocol_data.parameters.consideration
+            .slice(1)
+            .map((c) => ({ amount: c.startAmount, recipient: c.recipient })), // AdditionalRecipient[]
+          listing.protocol_data.signature, // signature
+        ],
+      ]
+    );
+
+    return this.bnpl_contract.execute({
+      module: this.os_module,
+      assetType: ethers.utils.formatBytes32String("ERC721"),
+      buyData: osBuyData,
+      totalPrice: listing["current_price"],
+      loanContract: ethers.constants.AddressZero, // TODO: check this
+      loanCoordinator: ethers.constants.AddressZero, // TODO: check this
+      serviceFeeData: {
+        serviceFee: 0, // TODO: bring from API
+        nonce: offer.signature.nonce,
+        expiry: offer.signature.expiry,
+        signature: offer.signature.signature,
+      },
+      offer: {
+        loanPrincipalAmount: offer.offer.loanPrincipalAmount,
+        maximumRepaymentAmount: offer.offer.maximumRepaymentAmount,
+        nftCollateralId: offer.offer.nftCollateralId,
+        nftCollateralContract: offer.offer.nftCollateralContract,
+        loanDuration: offer.offer.loanDuration,
+        loanAdminFeeInBasisPoints: offer.offer.loanAdminFeeInBasisPoints,
+        loanERC20Denomination: offer.offer.loanERC20Denomination,
+        referrer: offer.offer.referrer,
+      },
+      lenderSignature: offer.signature,
+      borrowerSettings: {
+        revenueSharePartner: ethers.constants.AddressZero, // TODO: check this
+        referralFeeInBasisPoints: 0,
+      },
+    });
   }
 }
