@@ -1,0 +1,327 @@
+[
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "module",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "assetType",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes",
+            "name": "buyData",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalPrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "loanContract",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "loanCoordinator",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "serviceFee",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "nonce",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "expiry",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bytes",
+                "name": "signature",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct Bnpl.ServiceFee",
+            "name": "serviceFeeData",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "loanPrincipalAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "maximumRepaymentAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "nftCollateralId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "nftCollateralContract",
+                "type": "address"
+              },
+              {
+                "internalType": "uint32",
+                "name": "loanDuration",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint16",
+                "name": "loanAdminFeeInBasisPoints",
+                "type": "uint16"
+              },
+              {
+                "internalType": "address",
+                "name": "loanERC20Denomination",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "referrer",
+                "type": "address"
+              }
+            ],
+            "internalType": "struct Offer",
+            "name": "offer",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "nonce",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "expiry",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "signer",
+                "type": "address"
+              },
+              {
+                "internalType": "bytes",
+                "name": "signature",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct Signature",
+            "name": "lenderSignature",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "revenueSharePartner",
+                "type": "address"
+              },
+              {
+                "internalType": "uint16",
+                "name": "referralFeeInBasisPoints",
+                "type": "uint16"
+              }
+            ],
+            "internalType": "struct BorrowerSettings",
+            "name": "borrowerSettings",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct Bnpl.Execution",
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "execute",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "lastExecutionParams",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "module",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "assetType",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "buyData",
+        "type": "bytes"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "loanContract",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "loanCoordinator",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "serviceFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expiry",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct Bnpl.ServiceFee",
+        "name": "serviceFeeData",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "loanPrincipalAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maximumRepaymentAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nftCollateralId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "nftCollateralContract",
+            "type": "address"
+          },
+          {
+            "internalType": "uint32",
+            "name": "loanDuration",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "loanAdminFeeInBasisPoints",
+            "type": "uint16"
+          },
+          {
+            "internalType": "address",
+            "name": "loanERC20Denomination",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "referrer",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct Offer",
+        "name": "offer",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expiry",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "signer",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct Signature",
+        "name": "lenderSignature",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "revenueSharePartner",
+            "type": "address"
+          },
+          {
+            "internalType": "uint16",
+            "name": "referralFeeInBasisPoints",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct BorrowerSettings",
+        "name": "borrowerSettings",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
