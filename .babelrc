@@ -1,3 +1,0 @@
-{
-  "plugins": [["transform-rename-import", { original: '.js', replacement: '.cjs' }]]
-}

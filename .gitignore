@@ -1,7 +1,7 @@
-.env
 packages/
 package-lock.json
 node_modules/
+types 
 
 # Logs
 logs
