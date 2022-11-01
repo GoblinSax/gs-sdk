@@ -63,7 +63,7 @@ export class GoblinSaxAPI {
 
           this.nftfi = "0x77097f421CEb2454eB5F77898d25159ff3C7381d";
           this.note = "0x88bffd4154ecf7545741bf6f3ec9f7e2e11602db";
-          this.weth = "0x0bb7509324ce409f7bbc4b701f932eaca9736ab7";
+          this.weth = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6";
           this.bnpl = "0xa261C830fc1632F433Ab628f315B9AdadBd91D28";
           this.os_module = "0x0000000000000000000000000000000000000001";
         }
