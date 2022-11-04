@@ -1,12 +1,21 @@
 import axios from "axios";
 import { BigNumber, ethers } from "ethers";
+
 import NFTFI_ABI from "./abis/nftfi.json";
 import ERC721_ABI from "./abis/erc721.json";
 import ERC20_ABI from "./abis/erc20.json";
+import NFTFI_NOTE_RECEIPT from "./abis/nftfiNoteReceipt.json";
 import BNPL from "./abis/bnpl.json";
-import { Nftfi, Erc20, Erc721, Bnpl } from "../types/typechain";
+import {
+  Nftfi,
+  Erc20,
+  Erc721,
+  Bnpl,
+  NftfiNoteReceipt,
+} from "../types/typechain";
 
 import {
+  AlchemyGetLoans,
   GS_API_Collections,
   GS_API_CreateOfferResponse,
   GS_API_GetLoanTerms,
@@ -18,10 +27,16 @@ export enum Version {
   GOERLI,
 }
 
+export enum LoanType {
+  NFTfi,
+  BNPL,
+}
+
 export class GoblinSaxAPI {
   envConfig: {
     gs_api: string;
     os_api: string;
+    alchemy_api: string;
     nftfi: string;
     nftfi_promissory_note: string;
     nftfi_obligation_receipt: string;
@@ -35,8 +50,11 @@ export class GoblinSaxAPI {
   apiKey: string;
   version: Version;
   nftfi_contract: Nftfi;
+  nftfi_note: NftfiNoteReceipt;
+  nftfi_obligation: NftfiNoteReceipt;
   weth_contract: Erc20;
   bnpl_contract: Bnpl;
+  gs_lender: string;
 
   constructor(
     signer: ethers.providers.JsonRpcSigner,
@@ -48,6 +66,7 @@ export class GoblinSaxAPI {
         this.envConfig = {
           gs_api: "https://atuz4790j2.execute-api.us-east-1.amazonaws.com/prod",
           os_api: "https://api.opensea.io/v2/orders/goerli/seaport",
+          alchemy_api: "https://eth-mainnet.alchemyapi.io",
           nftfi: "0x8252df1d8b29057d1afe3062bf5a64d503152bc8",
           nftfi_promissory_note: "0x5660e206496808f7b5cdb8c56a696a96ae5e9b23",
           nftfi_obligation_receipt:
@@ -62,6 +81,7 @@ export class GoblinSaxAPI {
         this.envConfig = {
           gs_api: "https://0em9k7cjm4.execute-api.us-east-1.amazonaws.com/prod",
           os_api: "https://testnets-api.opensea.io/v2/orders/goerli/seaport",
+          alchemy_api: "https://eth-goerli.alchemyapi.io",
           nftfi: "0x77097f421CEb2454eB5F77898d25159ff3C7381d",
           nftfi_promissory_note: "0x88bffd4154ecf7545741bf6f3ec9f7e2e11602db",
           nftfi_obligation_receipt:
@@ -81,12 +101,25 @@ export class GoblinSaxAPI {
     this.signer = signer;
     this.apiKey = apiKey;
     this.version = version;
+    this.gs_lender = "0xb66284947F9A35bD9FA893D444F19033FeBdA4A1";
 
     this.nftfi_contract = new ethers.Contract(
       this.envConfig.nftfi,
       NFTFI_ABI,
       this.signer
     ) as Nftfi;
+
+    this.nftfi_note = new ethers.Contract(
+      this.envConfig.nftfi_promissory_note,
+      NFTFI_NOTE_RECEIPT,
+      this.signer
+    ) as NftfiNoteReceipt;
+
+    this.nftfi_obligation = new ethers.Contract(
+      this.envConfig.nftfi_obligation_receipt,
+      NFTFI_NOTE_RECEIPT,
+      this.signer
+    ) as NftfiNoteReceipt;
 
     this.weth_contract = new ethers.Contract(
       this.envConfig.weth,
@@ -129,37 +162,79 @@ export class GoblinSaxAPI {
     this.nftfi_contract.payBackLoan(loanId);
   }
 
-  async getLoans(apiKey: string) {
-    let baseURL;
+  async getLoans(alchemyApiKey: string) {
     const signerAddress = await this.signer.getAddress();
+    let fetchMorePromissoryNotes = true;
+    let gsPromissoryNotesAssets: AlchemyGetLoans["ownedNfts"] = [];
+    let fetchObligationReceipts = true;
+    let signerObligationReceiptAssets: AlchemyGetLoans["ownedNfts"] = [];
 
-    if (this.version == Version.GOERLI) {
-      baseURL = `https://eth-goerli.alchemyapi.io`;
-    } else if (this.version == Version.MAINNET) {
-      baseURL = `https://eth-mainnet.alchemyapi.io`;
+    // Fetch Promissory notes (Traditional loan from NFTfi)
+    // In this case GS Lender owns the notes
+    while (fetchMorePromissoryNotes) {
+      const url = `${this.envConfig.alchemy_api}/nft/v2/${alchemyApiKey}/getNFTs/?owner=${this.gs_lender}&contractAddresses[]=${this.envConfig.nftfi_promissory_note}`;
+      const res = await axios.get<AlchemyGetLoans>(url);
+      gsPromissoryNotesAssets = [
+        ...gsPromissoryNotesAssets,
+        ...res.data.ownedNfts,
+      ];
+      if (!res.data["pageKey"]) {
+        fetchMorePromissoryNotes = false;
+      }
     }
 
-    let url = `${baseURL}/nft/v2/${apiKey}/getNFTs/?owner=0xb66284947F9A35bD9FA893D444F19033FeBdA4A1&contractAddresses[]=${this.envConfig.nftfi_promissory_note}`;
-    let response = await axios.get(url);
-
-    let collections = response.data["ownedNfts"];
-
-    let curr;
-
-    while ("pageKey" in response.data) {
-      url = `${baseURL}/nft/v2/${apiKey}/getNFTs/?owner=0xb66284947F9A35bD9FA893D444F19033FeBdA4A1&contractAddresses[]=${this.envConfig.nftfi_promissory_note}`;
-      curr = await axios.get(url);
-      collections.push(curr.data);
+    // Fetch Obligation notes (BNPL loans)
+    // In this case the Borrower get the obligation note and lender is address 0
+    while (fetchObligationReceipts) {
+      const url = `${this.envConfig.alchemy_api}/nft/v2/${alchemyApiKey}/getNFTs/?owner=${signerAddress}&contractAddresses[]=${this.envConfig.nftfi_obligation_receipt}`;
+      const res = await axios.get<AlchemyGetLoans>(url);
+      signerObligationReceiptAssets = [
+        ...signerObligationReceiptAssets,
+        ...res.data.ownedNfts,
+      ];
+      if (!res.data["pageKey"]) {
+        fetchObligationReceipts = false;
+      }
     }
 
-    let all_loans = {};
+    const all_loans: Record<
+      string,
+      {
+        loanType: LoanType;
+        loanInfo: Awaited<ReturnType<Nftfi["loanIdToLoan"]>>;
+      }
+    > = {};
 
-    for (let collection of collections) {
-      const id = collection["title"].split(" ")[2].replace("#", "");
-      const loan = await this.nftfi_contract.loanIdToLoan(id);
-      const signerAddress = await this.signer.getAddress();
-      if (loan["borrower"].toLowerCase() == signerAddress.toLowerCase()) {
-        all_loans[id] = loan;
+    // Process notes and obligations
+    for (let asset of gsPromissoryNotesAssets) {
+      // get loan id
+      const promissoryNoteTokenId = asset.id.tokenId;
+      const loanId = (await this.nftfi_note.loans(promissoryNoteTokenId))
+        .loanId;
+
+      // get loan info
+      const loanInfo = await this.nftfi_contract.loanIdToLoan(loanId);
+
+      // NFTfi loan: GS has promissory note and borrower is signer
+      if (loanInfo.borrower.toLowerCase() == signerAddress.toLowerCase()) {
+        all_loans[loanId.toString()] = {
+          loanType: LoanType.NFTfi,
+          loanInfo,
+        };
+      }
+
+      // BNPL loan: borrower is zero address and
+      // signer has an obligation note with id equal to promissoryNoteTokenId
+      if (
+        loanInfo.borrower == ethers.constants.AddressZero &&
+        signerObligationReceiptAssets.find(
+          (a) => a.id.tokenId == promissoryNoteTokenId
+        )
+      ) {
+        all_loans[loanId.toString()] = {
+          loanType: LoanType.BNPL,
+          loanInfo,
+        };
       }
     }
 

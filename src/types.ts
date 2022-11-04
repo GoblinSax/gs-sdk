@@ -57,3 +57,15 @@ export type GS_API_Collections = {
   slug: string;
   asset_contract: string;
 }[];
+
+export type AlchemyGetLoans = {
+  ownedNfts: {
+    contract: {
+      address: string;
+    };
+    id: {
+      tokenId: string;
+    };
+    title: string;
+  }[];
+};
