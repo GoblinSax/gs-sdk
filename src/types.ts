@@ -40,7 +40,7 @@ export type GS_API_CreateOfferResponse = {
       signature: string;
     };
   };
-  message?: string;
+  reason?: string;
 };
 
 export type GS_API_GetLoanTerms = {
