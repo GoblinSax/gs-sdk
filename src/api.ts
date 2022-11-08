@@ -4,8 +4,10 @@ import { BigNumber, ethers } from "ethers";
 import NFTFI_ABI from "./abis/nftfi.json";
 import ERC721_ABI from "./abis/erc721.json";
 import ERC20_ABI from "./abis/erc20.json";
-import NFTFI_NOTE_RECEIPT from "./abis/nftfiNoteReceipt.json";
-import BNPL from "./abis/bnpl.json";
+import NFTFI_NOTE_RECEIPT_ABI from "./abis/nftfiNoteReceipt.json";
+import BNPL_ABI from "./abis/bnpl.json";
+import SEAPORT_ABI from "./abis/seaport.json";
+
 import {
   Nftfi,
   Erc20,
@@ -13,6 +15,12 @@ import {
   Bnpl,
   NftfiNoteReceipt,
 } from "../types/typechain";
+
+import {
+  SeaportInterface,
+  OfferItemStruct,
+  ConsiderationItemStruct,
+} from "../types/typechain/Seaport";
 
 import {
   AlchemyGetLoans,
@@ -40,6 +48,8 @@ export class GoblinSaxAPI {
     nftfi: string;
     nftfi_promissory_note: string;
     nftfi_obligation_receipt: string;
+    nftfi_loanContract: string;
+    nftfi_loanCoordinator: string;
     weth: string;
     bnpl: string;
     os_module: string;
@@ -71,6 +81,8 @@ export class GoblinSaxAPI {
           nftfi_promissory_note: "0x5660e206496808f7b5cdb8c56a696a96ae5e9b23",
           nftfi_obligation_receipt:
             "0xe73ECe5988FfF33a012CEA8BB6Fd5B27679fC481",
+          nftfi_loanContract: "",
+          nftfi_loanCoordinator: "",
           weth: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
           bnpl: "",
           os_module: "0x0000000000000000000000000000000000000001",
@@ -86,10 +98,11 @@ export class GoblinSaxAPI {
           nftfi_promissory_note: "0x88bffd4154ecf7545741bf6f3ec9f7e2e11602db",
           nftfi_obligation_receipt:
             "0x3a44cc29C019865Aa71C2352AbC5700403296D58",
-          weth: "0x0bb7509324ce409f7bbc4b701f932eaca9736ab7",
-          // nuevo BNPL 0x5ac66997ef4a00FBFBE4e3211423E98D5ECFb747
-          bnpl: "0xD17Cb48462c6A7e8C8dB63edc4D38D74cAA61A2e",
-          os_module: "0x5B9f57F36d26440f44054c89fd67676209e06dAD",
+          nftfi_loanContract: "0x77097f421CEb2454eB5F77898d25159ff3C7381d",
+          nftfi_loanCoordinator: "0x97B55Db860CfB0E25F74d415aC23FA4dd1495C86",
+          weth: "0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6",
+          bnpl: "0xFfA9e3bbC8F15E8B5AC005aE86083773853A8B75",
+          os_module: "0xAa690b6137289357f516Dd92CE1Db4383f258cD3",
           whitelisted_collections:
             "https://api.goblinsax.xyz/collections_goerli/",
         };
@@ -111,13 +124,13 @@ export class GoblinSaxAPI {
 
     this.nftfi_note = new ethers.Contract(
       this.envConfig.nftfi_promissory_note,
-      NFTFI_NOTE_RECEIPT,
+      NFTFI_NOTE_RECEIPT_ABI,
       this.signer
     ) as NftfiNoteReceipt;
 
     this.nftfi_obligation = new ethers.Contract(
       this.envConfig.nftfi_obligation_receipt,
-      NFTFI_NOTE_RECEIPT,
+      NFTFI_NOTE_RECEIPT_ABI,
       this.signer
     ) as NftfiNoteReceipt;
 
@@ -129,7 +142,7 @@ export class GoblinSaxAPI {
 
     this.bnpl_contract = new ethers.Contract(
       this.envConfig.bnpl,
-      BNPL,
+      BNPL_ABI,
       this.signer
     ) as Bnpl;
   }
@@ -154,7 +167,7 @@ export class GoblinSaxAPI {
     if (res.data.success) {
       return res.data.body;
     } else {
-      throw new Error(res.data.message);
+      throw new Error(res.data.reason);
     }
   }
 
@@ -363,6 +376,28 @@ export class GoblinSaxAPI {
     return listing;
   }
 
+  async bnplAllowance(
+    token: string,
+    marketPrice: string,
+    principal: string,
+    gsFee: string
+  ) {
+    const contract = new ethers.Contract(
+      token,
+      ERC20_ABI,
+      this.signer
+    ) as Erc20;
+    const address = this.signer.getAddress();
+    const allowance = await contract.allowance(address, this.envConfig.bnpl);
+    const requiredAllowance = BigNumber.from(marketPrice)
+      .sub(principal)
+      .sub(gsFee);
+    return {
+      isAllowanceRequired: requiredAllowance.gt(allowance),
+      approve: () => contract.approve(this.envConfig.bnpl, requiredAllowance),
+    };
+  }
+
   async bnplOS(
     collection: string,
     assetId: string,
@@ -371,11 +406,14 @@ export class GoblinSaxAPI {
     principal: string,
     apr: number
   ) {
-    const listing = await this.getOSListing(collection, assetId);
+    let iface = new ethers.utils.Interface(SEAPORT_ABI) as SeaportInterface;
 
-    let offer;
+    const listing = await this.getOSListing(collection, assetId);
+    const osOffer = listing.protocol_data.parameters.offer[0];
+
+    let gsOffer;
     try {
-      offer = await this.createOffer(
+      gsOffer = await this.createOffer(
         collection,
         assetId,
         duration,
@@ -387,79 +425,98 @@ export class GoblinSaxAPI {
       console.error("GS Create offer: ", error);
     }
 
-    const osBuyData = ethers.utils.defaultAbiCoder.encode(
-      [
-        `tuple(
-        address,
-        uint256,
-        uint256,
-        address,
-        address,
-        address,
-        uint256,
-        uint256,
-        uint8,
-        uint256,
-        uint256,
-        bytes32,
-        uint256,
-        bytes32,
-        bytes32,
-        uint256,
-        tuple(uint256 amount,address recipient)[],
-        bytes
-      )`,
-      ],
-      [
-        [
-          listing.protocol_data.parameters.consideration[0].token, // considerationToken
-          0, // considerationIdentifier
-          listing.protocol_data.parameters.consideration[0].startAmount, // considerationAmount
-          listing.protocol_data.parameters.offerer, // offererN
-          listing.protocol_data.parameters.zone, // zone
-          listing.protocol_data.parameters.offer[0].token, // offerToken
-          listing.protocol_data.parameters.offer[0].identifierOrCriteria, // offerIdentifier
-          1, // offerAmount
-          8, // basicOrderType - ERC721 paying with ERC20
-          listing.protocol_data.parameters.startTime, // startTime
-          listing.protocol_data.parameters.endTime, // endTime
-          listing.protocol_data.parameters.zoneHash, // zoneHash
-          listing.protocol_data.parameters.salt, // salt
-          listing.protocol_data.parameters.conduitKey, // offererConduitKey
-          "0x0000000000000000000000000000000000000000000000000000000000000000", // fulfillerConduitKey
-          listing.protocol_data.parameters.consideration.length - 1, // totalOriginalAdditionalRecipients
-          listing.protocol_data.parameters.consideration
+    if (listing.protocol_data.parameters.offer.length > 1) {
+      throw Error("Opensea offer length not supported.");
+    }
+
+    const fulfillBasicOrderData = () =>
+      iface.encodeFunctionData("fulfillBasicOrder", [
+        {
+          considerationToken: osOffer.token, // considerationToken
+          considerationIdentifier: 0, // considerationIdentifier
+          considerationAmount: osOffer.startAmount, // considerationAmount
+          offerer: listing.protocol_data.parameters.offerer, // offerer
+          zone: listing.protocol_data.parameters.zone, // zone
+          offerToken: osOffer.token, // offerToken
+          offerIdentifier: osOffer.identifierOrCriteria, // offerIdentifier
+          offerAmount: 1, // offerAmount
+          basicOrderType: 8, // basicOrderType - ERC721 paying with ERC20
+          startTime: listing.protocol_data.parameters.startTime, // startTime
+          endTime: listing.protocol_data.parameters.endTime, // endTime
+          zoneHash: listing.protocol_data.parameters.zoneHash, // zoneHash
+          salt: listing.protocol_data.parameters.salt, // salt
+          offererConduitKey: listing.protocol_data.parameters.conduitKey, // offererConduitKey
+          fulfillerConduitKey:
+            "0x0000000000000000000000000000000000000000000000000000000000000000", // fulfillerConduitKey
+          totalOriginalAdditionalRecipients:
+            listing.protocol_data.parameters.consideration.length - 1, // totalOriginalAdditionalRecipients
+          additionalRecipients: listing.protocol_data.parameters.consideration
             .slice(1)
             .map((c) => ({ amount: c.startAmount, recipient: c.recipient })), // AdditionalRecipient[]
-          listing.protocol_data.signature, // signature
-        ],
-      ]
-    );
+          signature: listing.protocol_data.signature, // signature
+        },
+      ]);
+
+    const fulfillAdvancedOrder = () =>
+      iface.encodeFunctionData("fulfillAdvancedOrder", [
+        {
+          parameters: {
+            offerer: listing.protocol_data.parameters.offerer,
+            zone: listing.protocol_data.parameters.zone,
+            offer: listing.protocol_data.parameters.offer as OfferItemStruct[],
+            consideration: listing.protocol_data.parameters
+              .consideration as ConsiderationItemStruct[],
+            orderType: listing.protocol_data.parameters.orderType,
+            startTime: listing.protocol_data.parameters.startTime,
+            endTime: listing.protocol_data.parameters.endTime,
+            zoneHash: listing.protocol_data.parameters.zoneHash,
+            salt: listing.protocol_data.parameters.salt,
+            conduitKey: listing.protocol_data.parameters.conduitKey,
+            totalOriginalConsiderationItems:
+              listing.protocol_data.parameters.totalOriginalConsiderationItems,
+          }, // OrderParameters
+          numerator: 1,
+          denominator: listing.protocol_data.parameters.offer.endAmount,
+          signature: listing.protocol_data.signature,
+          extraData: "0x",
+        }, // advancedOrder
+        [], // criteriaResolvers
+        "0x", // fulfillerConduitKey
+        ethers.constants.AddressZero, // recipient
+      ]);
 
     return this.bnpl_contract.execute({
       module: this.envConfig.os_module,
-      assetType: ethers.utils.formatBytes32String("ERC721"), // offer: itemType = 3>1155  & itemType = 2>721
-      buyData: osBuyData,
-      totalPrice: listing["current_price"],
-      loanContract: "0x77097f421CEb2454eB5F77898d25159ff3C7381d",
-      loanCoordinator: "0x97B55Db860CfB0E25F74d415aC23FA4dd1495C86",
+      assetType:
+        osOffer.itemType == 2
+          ? ethers.utils.formatBytes32String("ERC721")
+          : ethers.utils.formatBytes32String("ERC1155"),
+      buyData:
+        osOffer.startAmount == "1" && osOffer.endAmount == "1"
+          ? fulfillBasicOrderData()
+          : fulfillAdvancedOrder(),
+      totalPrice: BigNumber.from(listing.current_price).div(
+        BigNumber.from(osOffer.endAmount)
+      ),
+      loanContract: this.envConfig.nftfi_loanContract,
+      loanCoordinator: this.envConfig.nftfi_loanCoordinator,
       serviceFeeData: {
         serviceFee: 0, // TODO: bring from API
-        nonce: offer.signature.nonce,
-        expiry: offer.signature.expiry,
-        signature: offer.signature.signature,
+        nonce: gsOffer.signature.nonce,
+        expiry: gsOffer.signature.expiry,
+        signature: gsOffer.signature.signature,
       },
       offer: {
-        loanPrincipalAmount: offer.offer.loanPrincipalAmount,
-        maximumRepaymentAmount: offer.offer.maximumRepaymentAmount,
-        nftCollateralId: offer.offer.nftCollateralId,
-        nftCollateralContract: offer.offer.nftCollateralContract,
-        loanDuration: offer.offer.loanDuration,
-        loanAdminFeeInBasisPoints: offer.offer.loanAdminFeeInBasisPoints,
-        loanERC20Denomination: offer.offer.loanERC20Denomination,
-        referrer: offer.offer.referrer,
+        loanPrincipalAmount: gsOffer.offer.loanPrincipalAmount,
+        maximumRepaymentAmount: gsOffer.offer.maximumRepaymentAmount,
+        nftCollateralId: gsOffer.offer.nftCollateralId,
+        nftCollateralContract: gsOffer.offer.nftCollateralContract,
+        loanDuration: gsOffer.offer.loanDuration,
+        loanAdminFeeInBasisPoints: gsOffer.offer.loanAdminFeeInBasisPoints,
+        loanERC20Denomination: gsOffer.offer.loanERC20Denomination,
+        referrer: gsOffer.offer.referrer,
       },
-      lenderSignature: offer.signature,
+      lenderSignature: gsOffer.signature,
       borrowerSettings: {
         revenueSharePartner: ethers.constants.AddressZero, // TODO: check this
         referralFeeInBasisPoints: 0,

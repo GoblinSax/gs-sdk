@@ -2,22 +2,192 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_allowedMarketModules",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  { "inputs": [], "name": "Bnpl__execute_invalidAssetType", "type": "error" },
+  { "inputs": [], "name": "Bnpl__execute_invalidModule", "type": "error" },
+  { "inputs": [], "name": "Bnpl__execute_unsuccessfulBuy", "type": "error" },
+  {
+    "inputs": [],
+    "name": "Bnpl__setAllowedMarketModules_invalidAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "Bnpl__setServiceFee_invalidServiceFee",
+    "type": "error"
+  },
+  { "inputs": [], "name": "Bnpl__validateServiceFee_expired", "type": "error" },
+  {
+    "inputs": [],
+    "name": "Bnpl__validateServiceFee_invalidNonce",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "Bnpl__validateServiceFee_invalidSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "Bnpl__validateServiceFee_invalidSigner",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "borrower",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "lender",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "loanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "obligationReceipt",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "smartNftId",
+        "type": "uint256"
+      }
+    ],
+    "name": "BnplExecuted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferStarted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "module",
+        "type": "address"
+      }
+    ],
+    "name": "SetAllowedMarketModules",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "serviceFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "SetServiceFee",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "ASSET_TYPE_ERC1155",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "ASSET_TYPE_ERC721",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "HUNDRED_PERCENT",
+    "outputs": [{ "internalType": "uint16", "name": "", "type": "uint16" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "acceptOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "allowedMarketModules",
+    "outputs": [
+      {
+        "internalType": "contract AllowedMarketModules",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "components": [
-          {
-            "internalType": "address",
-            "name": "module",
-            "type": "address"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "assetType",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "bytes",
-            "name": "buyData",
-            "type": "bytes"
-          },
+          { "internalType": "address", "name": "module", "type": "address" },
+          { "internalType": "bytes32", "name": "assetType", "type": "bytes32" },
+          { "internalType": "bytes", "name": "buyData", "type": "bytes" },
           {
             "internalType": "uint256",
             "name": "totalPrice",
@@ -40,21 +210,13 @@
                 "name": "serviceFee",
                 "type": "uint256"
               },
-              {
-                "internalType": "uint256",
-                "name": "nonce",
-                "type": "uint256"
-              },
+              { "internalType": "uint256", "name": "nonce", "type": "uint256" },
               {
                 "internalType": "uint256",
                 "name": "expiry",
                 "type": "uint256"
               },
-              {
-                "internalType": "bytes",
-                "name": "signature",
-                "type": "bytes"
-              }
+              { "internalType": "bytes", "name": "signature", "type": "bytes" }
             ],
             "internalType": "struct Bnpl.ServiceFee",
             "name": "serviceFeeData",
@@ -109,11 +271,7 @@
           },
           {
             "components": [
-              {
-                "internalType": "uint256",
-                "name": "nonce",
-                "type": "uint256"
-              },
+              { "internalType": "uint256", "name": "nonce", "type": "uint256" },
               {
                 "internalType": "uint256",
                 "name": "expiry",
@@ -124,11 +282,7 @@
                 "name": "signer",
                 "type": "address"
               },
-              {
-                "internalType": "bytes",
-                "name": "signature",
-                "type": "bytes"
-              }
+              { "internalType": "bytes", "name": "signature", "type": "bytes" }
             ],
             "internalType": "struct Signature",
             "name": "lenderSignature",
@@ -153,175 +307,139 @@
           }
         ],
         "internalType": "struct Bnpl.Execution",
-        "name": "params",
+        "name": "_params",
         "type": "tuple"
       }
     ],
     "name": "execute",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "lastExecutionParams",
-    "outputs": [
+    "name": "getChainID",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
+      { "internalType": "uint256", "name": "_serviceFee", "type": "uint256" }
+    ],
+    "name": "getServiceFee",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_nonce", "type": "uint256" }
+    ],
+    "name": "invalidateNonce",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_lender", "type": "address" },
+      { "internalType": "uint256", "name": "_nonce", "type": "uint256" }
+    ],
+    "name": "isValidNonce",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "uint256[]", "name": "", "type": "uint256[]" },
+      { "internalType": "uint256[]", "name": "", "type": "uint256[]" },
+      { "internalType": "bytes", "name": "", "type": "bytes" }
+    ],
+    "name": "onERC1155BatchReceived",
+    "outputs": [{ "internalType": "bytes4", "name": "", "type": "bytes4" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "bytes", "name": "", "type": "bytes" }
+    ],
+    "name": "onERC1155Received",
+    "outputs": [{ "internalType": "bytes4", "name": "", "type": "bytes4" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "bytes", "name": "", "type": "bytes" }
+    ],
+    "name": "onERC721Received",
+    "outputs": [{ "internalType": "bytes4", "name": "", "type": "bytes4" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "pendingOwner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
         "internalType": "address",
-        "name": "module",
+        "name": "_allowedMarketModules",
         "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "assetType",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes",
-        "name": "buyData",
-        "type": "bytes"
-      },
-      {
-        "internalType": "uint256",
-        "name": "totalPrice",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "loanContract",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "loanCoordinator",
-        "type": "address"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "serviceFee",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "nonce",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "expiry",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bytes",
-            "name": "signature",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct Bnpl.ServiceFee",
-        "name": "serviceFeeData",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "loanPrincipalAmount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "maximumRepaymentAmount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "nftCollateralId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "nftCollateralContract",
-            "type": "address"
-          },
-          {
-            "internalType": "uint32",
-            "name": "loanDuration",
-            "type": "uint32"
-          },
-          {
-            "internalType": "uint16",
-            "name": "loanAdminFeeInBasisPoints",
-            "type": "uint16"
-          },
-          {
-            "internalType": "address",
-            "name": "loanERC20Denomination",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "referrer",
-            "type": "address"
-          }
-        ],
-        "internalType": "struct Offer",
-        "name": "offer",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "nonce",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "expiry",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "signer",
-            "type": "address"
-          },
-          {
-            "internalType": "bytes",
-            "name": "signature",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct Signature",
-        "name": "lenderSignature",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "revenueSharePartner",
-            "type": "address"
-          },
-          {
-            "internalType": "uint16",
-            "name": "referralFeeInBasisPoints",
-            "type": "uint16"
-          }
-        ],
-        "internalType": "struct BorrowerSettings",
-        "name": "borrowerSettings",
-        "type": "tuple"
       }
     ],
+    "name": "setAllowedMarketModules",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes4", "name": "_interfaceId", "type": "bytes4" }
+    ],
+    "name": "supportsInterface",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "newOwner", "type": "address" }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]
