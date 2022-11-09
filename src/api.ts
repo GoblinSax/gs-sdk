@@ -429,75 +429,86 @@ export class GoblinSaxAPI {
       throw Error("Opensea offer length not supported.");
     }
 
-    const fulfillBasicOrderData = () => {
-      const params = {
-        considerationToken:
-          listing.protocol_data.parameters.consideration[0].token, // considerationToken
-        considerationIdentifier: 0, // considerationIdentifier
-        considerationAmount:
-          listing.protocol_data.parameters.consideration[0].startAmount, // considerationAmount
-        offerer: listing.protocol_data.parameters.offerer, // offerer
-        zone: listing.protocol_data.parameters.zone, // zone
-        offerToken: osOffer.token, // offerToken
-        offerIdentifier: osOffer.identifierOrCriteria, // offerIdentifier
-        offerAmount: 1, // offerAmount
-        basicOrderType: 8, // basicOrderType - ERC721 paying with ERC20
-        startTime: listing.protocol_data.parameters.startTime, // startTime
-        endTime: listing.protocol_data.parameters.endTime, // endTime
-        zoneHash: listing.protocol_data.parameters.zoneHash, // zoneHash
-        salt: listing.protocol_data.parameters.salt, // salt
-        offererConduitKey: listing.protocol_data.parameters.conduitKey, // offererConduitKey
-        fulfillerConduitKey:
-          "0x0000000000000000000000000000000000000000000000000000000000000000", // fulfillerConduitKey
-        totalOriginalAdditionalRecipients:
-          listing.protocol_data.parameters.consideration.length - 1, // totalOriginalAdditionalRecipients
-        additionalRecipients: listing.protocol_data.parameters.consideration
-          .slice(1)
-          .map((c) => ({ amount: c.startAmount, recipient: c.recipient })), // AdditionalRecipient[]
-        signature: listing.protocol_data.signature, // signature
+    // const fulfillBasicOrderData = () => {
+    //   const params = {
+    //     considerationToken:
+    //       listing.protocol_data.parameters.consideration[0].token, // considerationToken
+    //     considerationIdentifier: 0, // considerationIdentifier
+    //     considerationAmount:
+    //       listing.protocol_data.parameters.consideration[0].startAmount, // considerationAmount
+    //     offerer: listing.protocol_data.parameters.offerer, // offerer
+    //     zone: listing.protocol_data.parameters.zone, // zone
+    //     offerToken: osOffer.token, // offerToken
+    //     offerIdentifier: osOffer.identifierOrCriteria, // offerIdentifier
+    //     offerAmount: 1, // offerAmount
+    //     basicOrderType: 8, // basicOrderType - ERC721 paying with ERC20
+    //     startTime: listing.protocol_data.parameters.startTime, // startTime
+    //     endTime: listing.protocol_data.parameters.endTime, // endTime
+    //     zoneHash: listing.protocol_data.parameters.zoneHash, // zoneHash
+    //     salt: listing.protocol_data.parameters.salt, // salt
+    //     offererConduitKey: listing.protocol_data.parameters.conduitKey, // offererConduitKey
+    //     fulfillerConduitKey:
+    //       "0x0000000000000000000000000000000000000000000000000000000000000000", // fulfillerConduitKey
+    //     totalOriginalAdditionalRecipients:
+    //       listing.protocol_data.parameters.consideration.length - 1, // totalOriginalAdditionalRecipients
+    //     additionalRecipients: listing.protocol_data.parameters.consideration
+    //       .slice(1)
+    //       .map((c) => ({ amount: c.startAmount, recipient: c.recipient })), // AdditionalRecipient[]
+    //     signature: listing.protocol_data.signature, // signature
+    //   };
+
+    //   return iface.encodeFunctionData("fulfillBasicOrder", [params]);
+    // };
+
+    const fulfillAdvancedOrder = () => {
+      const advancedOrder = {
+        parameters: {
+          offerer: listing.protocol_data.parameters.offerer,
+          zone: listing.protocol_data.parameters.zone,
+          offer: listing.protocol_data.parameters.offer as OfferItemStruct[],
+          consideration: listing.protocol_data.parameters
+            .consideration as ConsiderationItemStruct[],
+          orderType: listing.protocol_data.parameters.orderType,
+          startTime: listing.protocol_data.parameters.startTime,
+          endTime: listing.protocol_data.parameters.endTime,
+          zoneHash: listing.protocol_data.parameters.zoneHash,
+          salt: listing.protocol_data.parameters.salt,
+          conduitKey: listing.protocol_data.parameters.conduitKey,
+          totalOriginalConsiderationItems:
+            listing.protocol_data.parameters.totalOriginalConsiderationItems,
+        }, // OrderParameters
+        numerator: 1,
+        denominator: listing.protocol_data.parameters.offer[0].endAmount,
+        signature: listing.protocol_data.signature,
+        extraData: ethers.constants.HashZero,
       };
 
-      return iface.encodeFunctionData("fulfillBasicOrder", [params]);
+      try {
+        return iface.encodeFunctionData("fulfillAdvancedOrder", [
+          advancedOrder,
+          [], // criteriaResolvers
+          ethers.constants.HashZero, // fulfillerConduitKey
+          ethers.constants.AddressZero, // recipient
+        ]);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
     };
 
-    const fulfillAdvancedOrder = () =>
-      iface.encodeFunctionData("fulfillAdvancedOrder", [
-        {
-          parameters: {
-            offerer: listing.protocol_data.parameters.offerer,
-            zone: listing.protocol_data.parameters.zone,
-            offer: listing.protocol_data.parameters.offer as OfferItemStruct[],
-            consideration: listing.protocol_data.parameters
-              .consideration as ConsiderationItemStruct[],
-            orderType: listing.protocol_data.parameters.orderType,
-            startTime: listing.protocol_data.parameters.startTime,
-            endTime: listing.protocol_data.parameters.endTime,
-            zoneHash: listing.protocol_data.parameters.zoneHash,
-            salt: listing.protocol_data.parameters.salt,
-            conduitKey: listing.protocol_data.parameters.conduitKey,
-            totalOriginalConsiderationItems:
-              listing.protocol_data.parameters.totalOriginalConsiderationItems,
-          }, // OrderParameters
-          numerator: 1,
-          denominator: listing.protocol_data.parameters.offer.endAmount,
-          signature: listing.protocol_data.signature,
-          extraData: "0x",
-        }, // advancedOrder
-        [], // criteriaResolvers
-        "0x", // fulfillerConduitKey
-        ethers.constants.AddressZero, // recipient
-      ]);
+    const buyData = fulfillAdvancedOrder();
+    // const buyData =
+    //   osOffer.startAmount == "1" && osOffer.endAmount == "1"
+    //     ? fulfillBasicOrderData()
+    //     : fulfillAdvancedOrder(),
 
-    return this.bnpl_contract.execute({
+    const executeParams = {
       module: this.envConfig.os_module,
       assetType:
         osOffer.itemType == 2
           ? ethers.utils.formatBytes32String("ERC721")
           : ethers.utils.formatBytes32String("ERC1155"),
-      buyData:
-        osOffer.startAmount == "1" && osOffer.endAmount == "1"
-          ? fulfillBasicOrderData()
-          : fulfillAdvancedOrder(),
+      buyData,
       totalPrice: BigNumber.from(listing.current_price).div(osOffer.endAmount),
       loanContract: this.envConfig.nftfi_loanContract,
       loanCoordinator: this.envConfig.nftfi_loanCoordinator,
@@ -522,6 +533,8 @@ export class GoblinSaxAPI {
         revenueSharePartner: ethers.constants.AddressZero,
         referralFeeInBasisPoints: 0,
       },
-    });
+    };
+
+    return this.bnpl_contract.execute(executeParams);
   }
 }
