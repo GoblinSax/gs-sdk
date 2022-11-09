@@ -41,6 +41,7 @@ export type GS_API_CreateOfferResponse = {
     };
   };
   reason?: string;
+  message?: string;
 };
 
 export type GS_API_GetLoanTerms = {

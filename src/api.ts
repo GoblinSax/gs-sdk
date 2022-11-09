@@ -429,33 +429,36 @@ export class GoblinSaxAPI {
       throw Error("Opensea offer length not supported.");
     }
 
-    const fulfillBasicOrderData = () =>
-      iface.encodeFunctionData("fulfillBasicOrder", [
-        {
-          considerationToken: osOffer.token, // considerationToken
-          considerationIdentifier: 0, // considerationIdentifier
-          considerationAmount: osOffer.startAmount, // considerationAmount
-          offerer: listing.protocol_data.parameters.offerer, // offerer
-          zone: listing.protocol_data.parameters.zone, // zone
-          offerToken: osOffer.token, // offerToken
-          offerIdentifier: osOffer.identifierOrCriteria, // offerIdentifier
-          offerAmount: 1, // offerAmount
-          basicOrderType: 8, // basicOrderType - ERC721 paying with ERC20
-          startTime: listing.protocol_data.parameters.startTime, // startTime
-          endTime: listing.protocol_data.parameters.endTime, // endTime
-          zoneHash: listing.protocol_data.parameters.zoneHash, // zoneHash
-          salt: listing.protocol_data.parameters.salt, // salt
-          offererConduitKey: listing.protocol_data.parameters.conduitKey, // offererConduitKey
-          fulfillerConduitKey:
-            "0x0000000000000000000000000000000000000000000000000000000000000000", // fulfillerConduitKey
-          totalOriginalAdditionalRecipients:
-            listing.protocol_data.parameters.consideration.length - 1, // totalOriginalAdditionalRecipients
-          additionalRecipients: listing.protocol_data.parameters.consideration
-            .slice(1)
-            .map((c) => ({ amount: c.startAmount, recipient: c.recipient })), // AdditionalRecipient[]
-          signature: listing.protocol_data.signature, // signature
-        },
-      ]);
+    const fulfillBasicOrderData = () => {
+      const params = {
+        considerationToken:
+          listing.protocol_data.parameters.consideration[0].token, // considerationToken
+        considerationIdentifier: 0, // considerationIdentifier
+        considerationAmount:
+          listing.protocol_data.parameters.consideration[0].startAmount, // considerationAmount
+        offerer: listing.protocol_data.parameters.offerer, // offerer
+        zone: listing.protocol_data.parameters.zone, // zone
+        offerToken: osOffer.token, // offerToken
+        offerIdentifier: osOffer.identifierOrCriteria, // offerIdentifier
+        offerAmount: 1, // offerAmount
+        basicOrderType: 8, // basicOrderType - ERC721 paying with ERC20
+        startTime: listing.protocol_data.parameters.startTime, // startTime
+        endTime: listing.protocol_data.parameters.endTime, // endTime
+        zoneHash: listing.protocol_data.parameters.zoneHash, // zoneHash
+        salt: listing.protocol_data.parameters.salt, // salt
+        offererConduitKey: listing.protocol_data.parameters.conduitKey, // offererConduitKey
+        fulfillerConduitKey:
+          "0x0000000000000000000000000000000000000000000000000000000000000000", // fulfillerConduitKey
+        totalOriginalAdditionalRecipients:
+          listing.protocol_data.parameters.consideration.length - 1, // totalOriginalAdditionalRecipients
+        additionalRecipients: listing.protocol_data.parameters.consideration
+          .slice(1)
+          .map((c) => ({ amount: c.startAmount, recipient: c.recipient })), // AdditionalRecipient[]
+        signature: listing.protocol_data.signature, // signature
+      };
+
+      return iface.encodeFunctionData("fulfillBasicOrder", [params]);
+    };
 
     const fulfillAdvancedOrder = () =>
       iface.encodeFunctionData("fulfillAdvancedOrder", [
@@ -495,9 +498,7 @@ export class GoblinSaxAPI {
         osOffer.startAmount == "1" && osOffer.endAmount == "1"
           ? fulfillBasicOrderData()
           : fulfillAdvancedOrder(),
-      totalPrice: BigNumber.from(listing.current_price).div(
-        BigNumber.from(osOffer.endAmount)
-      ),
+      totalPrice: BigNumber.from(listing.current_price).div(osOffer.endAmount),
       loanContract: this.envConfig.nftfi_loanContract,
       loanCoordinator: this.envConfig.nftfi_loanCoordinator,
       serviceFeeData: {
@@ -518,7 +519,7 @@ export class GoblinSaxAPI {
       },
       lenderSignature: gsOffer.signature,
       borrowerSettings: {
-        revenueSharePartner: ethers.constants.AddressZero, // TODO: check this
+        revenueSharePartner: ethers.constants.AddressZero,
         referralFeeInBasisPoints: 0,
       },
     });
