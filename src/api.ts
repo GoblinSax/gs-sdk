@@ -104,7 +104,7 @@ export class GoblinSaxAPI {
           bnpl: "0xFfA9e3bbC8F15E8B5AC005aE86083773853A8B75",
           os_module: "0xAa690b6137289357f516Dd92CE1Db4383f258cD3",
           whitelisted_collections:
-            "https://api.goblinsax.xyz/collections_goerli/",
+            "https://goerli-api.goblinsax.xyz/api/whitelist",
         };
         break;
       default:
@@ -147,12 +147,12 @@ export class GoblinSaxAPI {
     ) as Bnpl;
   }
 
-  async getWhitelist(): Promise<GS_API_Collections> {
+  async getWhitelist(): Promise<GS_API_Collections["whitelist"]> {
     return (
       await axios.get<GS_API_Collections>(
         this.envConfig.whitelisted_collections
       )
-    ).data;
+    ).data.whitelist;
   }
 
   async getTerms(

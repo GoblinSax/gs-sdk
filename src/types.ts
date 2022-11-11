@@ -55,9 +55,11 @@ export type GS_API_GetLoanTerms = {
 };
 
 export type GS_API_Collections = {
-  slug: string;
-  asset_contract: string;
-}[];
+  whitelist: {
+    slug: string;
+    asset_contract: string;
+  }[];
+};
 
 export type AlchemyGetLoans = {
   ownedNfts: {
