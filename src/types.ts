@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+
 export type GS_API_CreateOfferResponse = {
   success: boolean;
   body: {
@@ -37,7 +39,17 @@ export type GS_API_CreateOfferResponse = {
           bps: string;
         };
       };
+      id: string;
       signature: string;
+      service_fee: {
+        service_fee: BigNumber;
+        fee_receiver: string;
+        fee_receiver_nonce: string;
+        signature_expiry: number;
+        bnpl_contract: string;
+        chain_id: number;
+        signature: string;
+      };
     };
   };
   reason?: string;
@@ -49,7 +61,7 @@ export type GS_API_GetLoanTerms = {
   body: {
     maxLoan: number;
     price: number;
-    offers: Record<string, { LTV: number; APR: number }[]>;
+    offers: Record<string, { LTV: number; APR: number; FEE: number }[]>;
   };
   message?: string;
 };

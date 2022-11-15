@@ -28,6 +28,7 @@ import {
   GS_API_CreateOfferResponse,
   GS_API_GetLoanTerms,
 } from "src/types";
+import { BnplInterface } from "types/typechain/Bnpl";
 
 export enum Version {
   MAINNET,
@@ -53,7 +54,6 @@ export class GoblinSaxAPI {
     weth: string;
     bnpl: string;
     os_module: string;
-    whitelisted_collections: string;
   };
 
   signer: ethers.providers.JsonRpcSigner;
@@ -74,7 +74,7 @@ export class GoblinSaxAPI {
     switch (version) {
       case Version.MAINNET:
         this.envConfig = {
-          gs_api: "https://atuz4790j2.execute-api.us-east-1.amazonaws.com/prod",
+          gs_api: "https://api.goblinsax.xyz/collections",
           os_api: "https://api.opensea.io/v2/orders/goerli/seaport",
           alchemy_api: "https://eth-mainnet.alchemyapi.io",
           nftfi: "0x8252df1d8b29057d1afe3062bf5a64d503152bc8",
@@ -86,12 +86,11 @@ export class GoblinSaxAPI {
           weth: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
           bnpl: "",
           os_module: "0x0000000000000000000000000000000000000001",
-          whitelisted_collections: "https://api.goblinsax.xyz/collections/",
         };
         break;
       case Version.GOERLI:
         this.envConfig = {
-          gs_api: "https://0em9k7cjm4.execute-api.us-east-1.amazonaws.com/prod",
+          gs_api: "https://goerli-api.goblinsax.xyz",
           os_api: "https://testnets-api.opensea.io/v2/orders/goerli/seaport",
           alchemy_api: "https://eth-goerli.alchemyapi.io",
           nftfi: "0x77097f421CEb2454eB5F77898d25159ff3C7381d",
@@ -101,10 +100,8 @@ export class GoblinSaxAPI {
           nftfi_loanContract: "0x77097f421CEb2454eB5F77898d25159ff3C7381d",
           nftfi_loanCoordinator: "0x97B55Db860CfB0E25F74d415aC23FA4dd1495C86",
           weth: "0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6",
-          bnpl: "0xFfA9e3bbC8F15E8B5AC005aE86083773853A8B75",
-          os_module: "0xAa690b6137289357f516Dd92CE1Db4383f258cD3",
-          whitelisted_collections:
-            "https://goerli-api.goblinsax.xyz/api/whitelist",
+          bnpl: "0x6E982EA0cc19c0A2f375f106519BA1cE973a7d8d",
+          os_module: "0x37f381F0d024D1107eBBCAbD6280501B3bF88b8D",
         };
         break;
       default:
@@ -150,7 +147,7 @@ export class GoblinSaxAPI {
   async getWhitelist(): Promise<GS_API_Collections["whitelist"]> {
     return (
       await axios.get<GS_API_Collections>(
-        this.envConfig.whitelisted_collections
+        `${this.envConfig.gs_api}/api/whitelist`
       )
     ).data.whitelist;
   }
@@ -340,6 +337,15 @@ export class GoblinSaxAPI {
         signer: loan.result.lender.address,
         signature: loan.result.signature,
       },
+      serviceFee: {
+        fee: BigNumber.from(loan.result.service_fee.service_fee.toString()),
+        feeReceiver: loan.result.service_fee.fee_receiver,
+        feeReceiverNonce: loan.result.service_fee.fee_receiver_nonce,
+        signatureExpiry: loan.result.service_fee.signature_expiry,
+        bnplContract: loan.result.service_fee.bnpl_contract,
+        chainId: loan.result.service_fee.chain_id,
+        signature: loan.result.service_fee.signature,
+      },
     };
   }
 
@@ -387,8 +393,9 @@ export class GoblinSaxAPI {
       ERC20_ABI,
       this.signer
     ) as Erc20;
-    const address = this.signer.getAddress();
+    const address = await this.signer.getAddress();
     const allowance = await contract.allowance(address, this.envConfig.bnpl);
+
     const requiredAllowance = BigNumber.from(marketPrice)
       .sub(principal)
       .sub(gsFee);
@@ -513,10 +520,10 @@ export class GoblinSaxAPI {
       loanContract: this.envConfig.nftfi_loanContract,
       loanCoordinator: this.envConfig.nftfi_loanCoordinator,
       serviceFeeData: {
-        serviceFee: 0, // TODO: bring from API
-        nonce: gsOffer.signature.nonce,
-        expiry: gsOffer.signature.expiry,
-        signature: gsOffer.signature.signature,
+        amount: gsOffer.serviceFee.fee.toString(),
+        nonce: gsOffer.serviceFee.feeReceiverNonce,
+        expiry: gsOffer.serviceFee.signatureExpiry,
+        signature: gsOffer.serviceFee.signature,
       },
       offer: {
         loanPrincipalAmount: gsOffer.offer.loanPrincipalAmount,
@@ -534,7 +541,12 @@ export class GoblinSaxAPI {
         referralFeeInBasisPoints: 0,
       },
     };
+    debugger;
 
+    const xx = new ethers.utils.Interface(BNPL_ABI) as BnplInterface;
+    const res = xx.encodeFunctionData("execute", [executeParams]);
+    console.log({ res });
+    debugger;
     return this.bnpl_contract.execute(executeParams);
   }
 }

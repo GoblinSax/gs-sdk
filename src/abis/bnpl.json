@@ -1,11 +1,7 @@
 [
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_allowedMarketModules",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_feeReceiver", "type": "address" }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
@@ -15,12 +11,12 @@
   { "inputs": [], "name": "Bnpl__execute_unsuccessfulBuy", "type": "error" },
   {
     "inputs": [],
-    "name": "Bnpl__setAllowedMarketModules_invalidAddress",
+    "name": "Bnpl__setFeeReceiver_invalidAddress",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "Bnpl__setServiceFee_invalidServiceFee",
+    "name": "Bnpl__setModuleAllowance_invalidAddress",
     "type": "error"
   },
   { "inputs": [], "name": "Bnpl__validateServiceFee_expired", "type": "error" },
@@ -82,6 +78,25 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "module",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "allowed",
+        "type": "bool"
+      }
+    ],
+    "name": "ModuleAllowance",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "previousOwner",
         "type": "address"
       },
@@ -131,13 +146,13 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "serviceFee",
-        "type": "uint256"
+        "indexed": true,
+        "internalType": "address",
+        "name": "feeReceiver",
+        "type": "address"
       }
     ],
-    "name": "SetServiceFee",
+    "name": "SetFeeReceiver",
     "type": "event"
   },
   {
@@ -156,29 +171,9 @@
   },
   {
     "inputs": [],
-    "name": "HUNDRED_PERCENT",
-    "outputs": [{ "internalType": "uint16", "name": "", "type": "uint16" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "acceptOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "allowedMarketModules",
-    "outputs": [
-      {
-        "internalType": "contract AllowedMarketModules",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -207,7 +202,7 @@
             "components": [
               {
                 "internalType": "uint256",
-                "name": "serviceFee",
+                "name": "amount",
                 "type": "uint256"
               },
               { "internalType": "uint256", "name": "nonce", "type": "uint256" },
@@ -318,19 +313,16 @@
   },
   {
     "inputs": [],
-    "name": "getChainID",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "feeReceiver",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
-      { "internalType": "uint256", "name": "_serviceFee", "type": "uint256" }
-    ],
-    "name": "getServiceFee",
+    "inputs": [],
+    "name": "getChainID",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -340,6 +332,13 @@
     "name": "invalidateNonce",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "isModuleAllowed",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -413,13 +412,19 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_allowedMarketModules",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_feeReceiver", "type": "address" }
     ],
-    "name": "setAllowedMarketModules",
+    "name": "setFeeReceiver",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_module", "type": "address" },
+      { "internalType": "bool", "name": "_allowed", "type": "bool" }
+    ],
+    "name": "setModuleAllowance",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
