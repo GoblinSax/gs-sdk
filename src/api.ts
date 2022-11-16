@@ -24,22 +24,13 @@ import {
 
 import {
   AlchemyGetLoans,
+  GetLoansReturnType,
   GS_API_Collections,
   GS_API_CreateOfferResponse,
   GS_API_GetLoanTerms,
+  LoanType,
+  Version,
 } from "src/types";
-import { BnplInterface } from "types/typechain/Bnpl";
-
-export enum Version {
-  MAINNET,
-  RINKEBY,
-  GOERLI,
-}
-
-export enum LoanType {
-  NFTfi,
-  BNPL,
-}
 
 export class GoblinSaxAPI {
   envConfig: {
@@ -168,11 +159,11 @@ export class GoblinSaxAPI {
     }
   }
 
-  async repayLoan(loanId: ethers.BigNumberish) {
+  async repayLoan(loanId: ethers.BigNumberish): Promise<void> {
     this.nftfi_contract.payBackLoan(loanId);
   }
 
-  async getLoans(alchemyApiKey: string) {
+  async getLoans(alchemyApiKey: string): Promise<GetLoansReturnType> {
     const signerAddress = await this.signer.getAddress();
     let fetchMorePromissoryNotes = true;
     let gsPromissoryNotesAssets: AlchemyGetLoans["ownedNfts"] = [];
@@ -207,13 +198,7 @@ export class GoblinSaxAPI {
       }
     }
 
-    const all_loans: Record<
-      string,
-      {
-        loanType: LoanType;
-        loanInfo: Awaited<ReturnType<Nftfi["loanIdToLoan"]>>;
-      }
-    > = {};
+    const all_loans: GetLoansReturnType = {};
 
     // Process notes and obligations
     for (let asset of gsPromissoryNotesAssets) {
@@ -251,7 +236,7 @@ export class GoblinSaxAPI {
     return all_loans;
   }
 
-  async checkApprovedWETH() {
+  async checkApprovedWETH(): Promise<Boolean> {
     const address = await this.signer.getAddress();
     let x = await this.weth_contract.allowance(address, this.envConfig.nftfi);
 
@@ -263,14 +248,14 @@ export class GoblinSaxAPI {
     }
   }
 
-  async approveSpendingWETH() {
-    await this.weth_contract.approve(
+  async approveSpendingWETH(): Promise<ethers.ContractTransaction> {
+    return this.weth_contract.approve(
       this.envConfig.nftfi,
       ethers.constants.MaxUint256
     );
   }
 
-  async checkApprovedNFT(collection) {
+  async checkApprovedNFT(collection): Promise<Boolean> {
     try {
       let erc721_contract = new ethers.Contract(
         collection,
@@ -278,7 +263,7 @@ export class GoblinSaxAPI {
         this.signer
       ) as Erc721;
       const signerAddress = await this.signer.getAddress();
-      return await erc721_contract.isApprovedForAll(
+      return erc721_contract.isApprovedForAll(
         signerAddress,
         this.envConfig.nftfi
       );
@@ -287,13 +272,13 @@ export class GoblinSaxAPI {
     }
   }
 
-  async approveSpendingNFT(collection) {
+  async approveSpendingNFT(collection): Promise<ethers.ContractTransaction> {
     let erc721_contract = new ethers.Contract(
       collection,
       ERC721_ABI,
       this.signer
     );
-    await erc721_contract.setApprovalForAll(this.envConfig.nftfi, true);
+    return erc721_contract.setApprovalForAll(this.envConfig.nftfi, true);
   }
 
   async createOffer(
@@ -357,7 +342,7 @@ export class GoblinSaxAPI {
     principal: string,
     apr,
     _referral // TODO: not used, should we remove it?
-  ) {
+  ): Promise<ethers.ContractTransaction> {
     const { offer, signature, borrowerSettings } = await this.createOffer(
       collection,
       assetId,
@@ -367,7 +352,7 @@ export class GoblinSaxAPI {
       apr
     );
 
-    await this.nftfi_contract.acceptOffer(offer, signature, borrowerSettings); //this will create the loan
+    return this.nftfi_contract.acceptOffer(offer, signature, borrowerSettings); //this will create the loan
   }
 
   async getOSListing(collection: string, assetId: string) {
@@ -387,7 +372,10 @@ export class GoblinSaxAPI {
     marketPrice: string,
     principal: string,
     gsFee: string
-  ) {
+  ): Promise<{
+    isAllowanceRequired: boolean;
+    approve: () => Promise<ethers.ContractTransaction>;
+  }> {
     const contract = new ethers.Contract(
       token,
       ERC20_ABI,
@@ -412,7 +400,7 @@ export class GoblinSaxAPI {
     borrowerAddress: string,
     principal: string,
     apr: number
-  ) {
+  ): Promise<ethers.ContractTransaction> {
     let iface = new ethers.utils.Interface(SEAPORT_ABI) as SeaportInterface;
 
     const listing = await this.getOSListing(collection, assetId);
@@ -541,10 +529,6 @@ export class GoblinSaxAPI {
         referralFeeInBasisPoints: 0,
       },
     };
-
-    const xx = new ethers.utils.Interface(BNPL_ABI) as BnplInterface;
-    const res = xx.encodeFunctionData("execute", [executeParams]);
-    console.log({ res });
 
     return this.bnpl_contract.execute(executeParams);
   }

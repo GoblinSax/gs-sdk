@@ -1,4 +1,5 @@
 import { BigNumber } from "ethers";
+import { Nftfi } from "types/typechain";
 
 export type GS_API_CreateOfferResponse = {
   success: boolean;
@@ -84,3 +85,22 @@ export type AlchemyGetLoans = {
     title: string;
   }[];
 };
+
+export enum Version {
+  MAINNET,
+  RINKEBY,
+  GOERLI,
+}
+
+export enum LoanType {
+  NFTfi,
+  BNPL,
+}
+
+export type GetLoansReturnType = Record<
+  string,
+  {
+    loanType: LoanType;
+    loanInfo: Awaited<ReturnType<Nftfi["loanIdToLoan"]>>;
+  }
+>;
