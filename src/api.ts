@@ -398,7 +398,7 @@ export class GoblinSaxAPI {
 
     const requiredAllowance = BigNumber.from(marketPrice)
       .sub(principal)
-      .sub(gsFee);
+      .add(gsFee);
     return {
       isAllowanceRequired: requiredAllowance.gt(allowance),
       approve: () => contract.approve(this.envConfig.bnpl, requiredAllowance),
@@ -541,12 +541,11 @@ export class GoblinSaxAPI {
         referralFeeInBasisPoints: 0,
       },
     };
-    debugger;
 
     const xx = new ethers.utils.Interface(BNPL_ABI) as BnplInterface;
     const res = xx.encodeFunctionData("execute", [executeParams]);
     console.log({ res });
-    debugger;
+
     return this.bnpl_contract.execute(executeParams);
   }
 }
