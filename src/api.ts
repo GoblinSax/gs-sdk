@@ -1,105 +1,146 @@
 import axios from "axios";
 import { BigNumber, ethers } from "ethers";
+
 import NFTFI_ABI from "./abis/nftfi.json";
 import ERC721_ABI from "./abis/erc721.json";
 import ERC20_ABI from "./abis/erc20.json";
-import { Nftfi, Erc20, Erc721 } from "../types/typechain";
+import NFTFI_NOTE_RECEIPT_ABI from "./abis/nftfiNoteReceipt.json";
+import BNPL_ABI from "./abis/bnpl.json";
+import SEAPORT_ABI from "./abis/seaport.json";
 
 import {
+  Nftfi,
+  Erc20,
+  Erc721,
+  Bnpl,
+  NftfiNoteReceipt,
+} from "../types/typechain";
+
+import {
+  SeaportInterface,
+  OfferItemStruct,
+  ConsiderationItemStruct,
+} from "../types/typechain/Seaport";
+
+import {
+  AlchemyGetLoans,
+  GetLoansReturnType,
   GS_API_Collections,
   GS_API_CreateOfferResponse,
   GS_API_GetLoanTerms,
+  LoanType,
+  Version,
 } from "src/types";
 
-export enum Version {
-  MAINNET,
-  RINKEBY,
-  GOERLI,
-}
-
 export class GoblinSaxAPI {
+  envConfig: {
+    gs_api: string;
+    os_api: string;
+    alchemy_api: string;
+    nftfi: string;
+    nftfi_promissory_note: string;
+    nftfi_obligation_receipt: string;
+    nftfi_loanContract: string;
+    nftfi_loanCoordinator: string;
+    weth: string;
+    bnpl: string;
+    os_module: string;
+  };
+
   signer: ethers.providers.JsonRpcSigner;
   apiKey: string;
   version: Version;
-  gs_api: string;
-  os_api: string;
-  note: string;
-  nftfi: string;
   nftfi_contract: Nftfi;
-  weth: string;
+  nftfi_note: NftfiNoteReceipt;
+  nftfi_obligation: NftfiNoteReceipt;
   weth_contract: Erc20;
-  bnpl: string;
-  os_module: string;
+  bnpl_contract: Bnpl;
+  gs_lender: string;
 
   constructor(
     signer: ethers.providers.JsonRpcSigner,
     apiKey: string,
     version: Version
   ) {
-    this.signer = signer;
-    this.apiKey = apiKey;
-    this.version = version;
-
     switch (version) {
       case Version.MAINNET:
-        {
-          this.gs_api =
-            "https://atuz4790j2.execute-api.us-east-1.amazonaws.com/prod";
-          this.os_api = "https://api.opensea.io/v2/orders/goerli/seaport";
-
-          this.nftfi = "0x8252df1d8b29057d1afe3062bf5a64d503152bc8";
-          this.note = "0x5660e206496808f7b5cdb8c56a696a96ae5e9b23";
-          this.weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-          this.bnpl = "";
-          this.os_module = "0x0000000000000000000000000000000000000001";
-        }
+        this.envConfig = {
+          gs_api: "https://api.goblinsax.xyz/collections",
+          os_api: "https://api.opensea.io/v2/orders/goerli/seaport",
+          alchemy_api: "https://eth-mainnet.alchemyapi.io",
+          nftfi: "0x8252df1d8b29057d1afe3062bf5a64d503152bc8",
+          nftfi_promissory_note: "0x5660e206496808f7b5cdb8c56a696a96ae5e9b23",
+          nftfi_obligation_receipt:
+            "0xe73ECe5988FfF33a012CEA8BB6Fd5B27679fC481",
+          nftfi_loanContract: "",
+          nftfi_loanCoordinator: "",
+          weth: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+          bnpl: "",
+          os_module: "0x0000000000000000000000000000000000000001",
+        };
         break;
       case Version.GOERLI:
-        {
-          this.gs_api =
-            "https://sdm6h8zgmd.execute-api.us-east-1.amazonaws.com/prod";
-          this.os_api =
-            "https://testnets-api.opensea.io/v2/orders/goerli/seaport";
-
-          this.nftfi = "0x77097f421CEb2454eB5F77898d25159ff3C7381d";
-          this.note = "0x88bffd4154ecf7545741bf6f3ec9f7e2e11602db";
-          this.weth = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6";
-          this.bnpl = "0xa261C830fc1632F433Ab628f315B9AdadBd91D28";
-          this.os_module = "0x0000000000000000000000000000000000000001";
-        }
+        this.envConfig = {
+          gs_api: "https://goerli-api.goblinsax.xyz",
+          os_api: "https://testnets-api.opensea.io/v2/orders/goerli/seaport",
+          alchemy_api: "https://eth-goerli.alchemyapi.io",
+          nftfi: "0x77097f421CEb2454eB5F77898d25159ff3C7381d",
+          nftfi_promissory_note: "0x88bffd4154ecf7545741bf6f3ec9f7e2e11602db",
+          nftfi_obligation_receipt:
+            "0x3a44cc29C019865Aa71C2352AbC5700403296D58",
+          nftfi_loanContract: "0x77097f421CEb2454eB5F77898d25159ff3C7381d",
+          nftfi_loanCoordinator: "0x97B55Db860CfB0E25F74d415aC23FA4dd1495C86",
+          weth: "0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6",
+          bnpl: "0x6E982EA0cc19c0A2f375f106519BA1cE973a7d8d",
+          os_module: "0x37f381F0d024D1107eBBCAbD6280501B3bF88b8D",
+        };
         break;
       default:
         throw new Error(`Version must be one of ${Version}`);
     }
 
+    this.signer = signer;
+    this.apiKey = apiKey;
+    this.version = version;
+    this.gs_lender = "0xb66284947F9A35bD9FA893D444F19033FeBdA4A1";
+
     this.nftfi_contract = new ethers.Contract(
-      this.nftfi,
+      this.envConfig.nftfi,
       NFTFI_ABI,
       this.signer
     ) as Nftfi;
 
+    this.nftfi_note = new ethers.Contract(
+      this.envConfig.nftfi_promissory_note,
+      NFTFI_NOTE_RECEIPT_ABI,
+      this.signer
+    ) as NftfiNoteReceipt;
+
+    this.nftfi_obligation = new ethers.Contract(
+      this.envConfig.nftfi_obligation_receipt,
+      NFTFI_NOTE_RECEIPT_ABI,
+      this.signer
+    ) as NftfiNoteReceipt;
+
     this.weth_contract = new ethers.Contract(
-      this.weth,
+      this.envConfig.weth,
       ERC20_ABI,
       this.signer
     ) as Erc20;
+
+    this.bnpl_contract = new ethers.Contract(
+      this.envConfig.bnpl,
+      BNPL_ABI,
+      this.signer
+    ) as Bnpl;
   }
 
-  async getWhitelist(): Promise<GS_API_Collections> {
-    switch (this.version) {
-      case Version.GOERLI:
-        return (
-          await axios.get<GS_API_Collections>(
-            "https://api.goblinsax.xyz/collections_goerli/"
-          )
-        ).data;
-      default:
-        return (
-          await axios.get<GS_API_Collections>(
-            "https://api.goblinsax.xyz/collections/"
-          )
-        ).data;
-    }
+  async getWhitelist(): Promise<GS_API_Collections["whitelist"]> {
+    return (
+      await axios.get<GS_API_Collections>(
+        `${this.envConfig.gs_api}/api/whitelist`
+      )
+    ).data.whitelist;
   }
 
   async getTerms(
@@ -107,60 +148,97 @@ export class GoblinSaxAPI {
     assetId: string
   ): Promise<GS_API_GetLoanTerms["body"]> {
     let res = await axios.get(
-      `${this.gs_api}/api/get-loan-terms?address=${collection}&id=${assetId}`,
+      `${this.envConfig.gs_api}/api/get-loan-terms?address=${collection}&id=${assetId}`,
       { headers: { "x-api-key": this.apiKey } }
     );
 
     if (res.data.success) {
       return res.data.body;
     } else {
-      throw new Error(res.data.message);
+      throw new Error(res.data.reason);
     }
   }
 
-  async repayLoan(loanId: ethers.BigNumberish) {
+  async repayLoan(loanId: ethers.BigNumberish): Promise<void> {
     this.nftfi_contract.payBackLoan(loanId);
   }
 
-  async getLoans(apiKey: string) {
-    let baseURL;
+  async getLoans(alchemyApiKey: string): Promise<GetLoansReturnType> {
+    const signerAddress = await this.signer.getAddress();
+    let fetchMorePromissoryNotes = true;
+    let gsPromissoryNotesAssets: AlchemyGetLoans["ownedNfts"] = [];
+    let fetchObligationReceipts = true;
+    let signerObligationReceiptAssets: AlchemyGetLoans["ownedNfts"] = [];
 
-    if (this.version == Version.GOERLI) {
-      baseURL = `https://eth-goerli.alchemyapi.io`;
-    } else if (this.version == Version.MAINNET) {
-      baseURL = `https://eth-mainnet.alchemyapi.io`;
+    // Fetch Promissory notes (Traditional loan from NFTfi)
+    // In this case GS Lender owns the notes
+    while (fetchMorePromissoryNotes) {
+      const url = `${this.envConfig.alchemy_api}/nft/v2/${alchemyApiKey}/getNFTs/?owner=${this.gs_lender}&contractAddresses[]=${this.envConfig.nftfi_promissory_note}`;
+      const res = await axios.get<AlchemyGetLoans>(url);
+      gsPromissoryNotesAssets = [
+        ...gsPromissoryNotesAssets,
+        ...res.data.ownedNfts,
+      ];
+      if (!res.data["pageKey"]) {
+        fetchMorePromissoryNotes = false;
+      }
     }
 
-    let url = `${baseURL}/nft/v2/${apiKey}/getNFTs/?owner=0xb66284947F9A35bD9FA893D444F19033FeBdA4A1&contractAddresses[]=${this.note}`;
-    let response = await axios.get(url);
-
-    let collections = response.data["ownedNfts"];
-
-    let curr;
-
-    while ("pageKey" in response.data) {
-      url = `${baseURL}/nft/v2/${apiKey}/getNFTs/?owner=0xb66284947F9A35bD9FA893D444F19033FeBdA4A1&contractAddresses[]=${this.note}`;
-      curr = await axios.get(url);
-      collections.push(curr.data);
+    // Fetch Obligation notes (BNPL loans)
+    // In this case the Borrower get the obligation note and lender is address 0
+    while (fetchObligationReceipts) {
+      const url = `${this.envConfig.alchemy_api}/nft/v2/${alchemyApiKey}/getNFTs/?owner=${signerAddress}&contractAddresses[]=${this.envConfig.nftfi_obligation_receipt}`;
+      const res = await axios.get<AlchemyGetLoans>(url);
+      signerObligationReceiptAssets = [
+        ...signerObligationReceiptAssets,
+        ...res.data.ownedNfts,
+      ];
+      if (!res.data["pageKey"]) {
+        fetchObligationReceipts = false;
+      }
     }
 
-    let all_loans = {};
+    const all_loans: GetLoansReturnType = {};
 
-    for (let collection of collections) {
-      const id = collection["title"].split(" ")[2].replace("#", "");
-      const loan = await this.nftfi_contract.loanIdToLoan(id);
-      const signerAddress = await this.signer.getAddress();
-      if (loan["borrower"].toLowerCase() == signerAddress.toLowerCase()) {
-        all_loans[id] = loan;
+    // Process notes and obligations
+    for (let asset of gsPromissoryNotesAssets) {
+      // get loan id
+      const promissoryNoteTokenId = asset.id.tokenId;
+      const loanId = (await this.nftfi_note.loans(promissoryNoteTokenId))
+        .loanId;
+
+      // get loan info
+      const loanInfo = await this.nftfi_contract.loanIdToLoan(loanId);
+
+      // NFTfi loan: GS has promissory note and borrower is signer
+      if (loanInfo.borrower.toLowerCase() == signerAddress.toLowerCase()) {
+        all_loans[loanId.toString()] = {
+          loanType: LoanType.NFTfi,
+          loanInfo,
+        };
+      }
+
+      // BNPL loan: borrower is zero address and
+      // signer has an obligation note with id equal to promissoryNoteTokenId
+      if (
+        loanInfo.borrower == ethers.constants.AddressZero &&
+        signerObligationReceiptAssets.find(
+          (a) => a.id.tokenId == promissoryNoteTokenId
+        )
+      ) {
+        all_loans[loanId.toString()] = {
+          loanType: LoanType.BNPL,
+          loanInfo,
+        };
       }
     }
 
     return all_loans;
   }
 
-  async checkApprovedWETH() {
+  async checkApprovedWETH(): Promise<Boolean> {
     const address = await this.signer.getAddress();
-    let x = await this.weth_contract.allowance(address, this.nftfi);
+    let x = await this.weth_contract.allowance(address, this.envConfig.nftfi);
 
     //compare with a very large amount whose size is unlikely in a single loan
     if (x.lt(BigNumber.from(10).pow(18).mul(1000))) {
@@ -170,11 +248,14 @@ export class GoblinSaxAPI {
     }
   }
 
-  async approveSpendingWETH() {
-    await this.weth_contract.approve(this.nftfi, ethers.constants.MaxUint256);
+  async approveSpendingWETH(): Promise<ethers.ContractTransaction> {
+    return this.weth_contract.approve(
+      this.envConfig.nftfi,
+      ethers.constants.MaxUint256
+    );
   }
 
-  async checkApprovedNFT(collection) {
+  async checkApprovedNFT(collection): Promise<Boolean> {
     try {
       let erc721_contract = new ethers.Contract(
         collection,
@@ -182,19 +263,22 @@ export class GoblinSaxAPI {
         this.signer
       ) as Erc721;
       const signerAddress = await this.signer.getAddress();
-      return await erc721_contract.isApprovedForAll(signerAddress, this.nftfi);
+      return erc721_contract.isApprovedForAll(
+        signerAddress,
+        this.envConfig.nftfi
+      );
     } catch (error) {
       return false;
     }
   }
 
-  async approveSpendingNFT(collection) {
+  async approveSpendingNFT(collection): Promise<ethers.ContractTransaction> {
     let erc721_contract = new ethers.Contract(
       collection,
       ERC721_ABI,
       this.signer
     );
-    await erc721_contract.setApprovalForAll(this.nftfi, true);
+    return erc721_contract.setApprovalForAll(this.envConfig.nftfi, true);
   }
 
   async createOffer(
@@ -205,13 +289,13 @@ export class GoblinSaxAPI {
     principal: ethers.BigNumberish,
     apr: number
   ) {
-    let url = `${this.gs_api}/api/create-offer?address=${collection}&id=${assetId}&duration=${duration}&borrowerAddress=${borrowerAddress}&principal=${principal}&apr=${apr}`;
+    let url = `${this.envConfig.gs_api}/api/create-offer?address=${collection}&id=${assetId}&duration=${duration}&borrowerAddress=${borrowerAddress}&principal=${principal}&apr=${apr}`;
     let res = await axios.get<GS_API_CreateOfferResponse>(url, {
       headers: { "x-api-key": this.apiKey },
     });
 
     if (!res.data.success) {
-      throw new Error(res.data.message);
+      throw new Error(res.data.reason);
     }
 
     const loan = res.data.body;
@@ -238,6 +322,15 @@ export class GoblinSaxAPI {
         signer: loan.result.lender.address,
         signature: loan.result.signature,
       },
+      serviceFee: {
+        fee: BigNumber.from(loan.result.service_fee.service_fee.toString()),
+        feeReceiver: loan.result.service_fee.fee_receiver,
+        feeReceiverNonce: loan.result.service_fee.fee_receiver_nonce,
+        signatureExpiry: loan.result.service_fee.signature_expiry,
+        bnplContract: loan.result.service_fee.bnpl_contract,
+        chainId: loan.result.service_fee.chain_id,
+        signature: loan.result.service_fee.signature,
+      },
     };
   }
 
@@ -249,7 +342,7 @@ export class GoblinSaxAPI {
     principal: string,
     apr,
     _referral // TODO: not used, should we remove it?
-  ) {
+  ): Promise<ethers.ContractTransaction> {
     const { offer, signature, borrowerSettings } = await this.createOffer(
       collection,
       assetId,
@@ -259,6 +352,208 @@ export class GoblinSaxAPI {
       apr
     );
 
-    await this.nftfi_contract.acceptOffer(offer, signature, borrowerSettings); //this will create the loan
+    return this.nftfi_contract.acceptOffer(offer, signature, borrowerSettings); //this will create the loan
+  }
+
+  async getOSListing(collection: string, assetId: string) {
+    const osApiUrl = `${this.envConfig.os_api}/listings?asset_contract_address=${collection}&token_ids=${assetId}&limit=1`;
+    let osRes = await axios.get(osApiUrl);
+    let listing = osRes.data.orders[0];
+
+    if (!listing) {
+      throw new Error("Listing not found for asset provided");
+    }
+
+    return listing;
+  }
+
+  async bnplAllowance(
+    token: string,
+    marketPrice: string,
+    principal: string,
+    gsFee: string
+  ): Promise<{
+    isAllowanceRequired: boolean;
+    approve: () => Promise<ethers.ContractTransaction>;
+  }> {
+    const contract = new ethers.Contract(
+      token,
+      ERC20_ABI,
+      this.signer
+    ) as Erc20;
+    const address = await this.signer.getAddress();
+    const allowance = await contract.allowance(address, this.envConfig.bnpl);
+
+    const requiredAllowance = BigNumber.from(marketPrice)
+      .sub(principal)
+      .add(gsFee);
+    return {
+      isAllowanceRequired: requiredAllowance.gt(allowance),
+      approve: () => contract.approve(this.envConfig.bnpl, requiredAllowance),
+    };
+  }
+
+  async bnplOS(
+    collection: string,
+    assetId: string,
+    duration: string,
+    borrowerAddress: string,
+    principal: string,
+    apr: number
+  ): Promise<ethers.ContractTransaction> {
+    let iface = new ethers.utils.Interface(SEAPORT_ABI) as SeaportInterface;
+
+    const listing = await this.getOSListing(collection, assetId);
+    const osOffer = listing.protocol_data.parameters.offer[0];
+
+    let gsOffer;
+    try {
+      gsOffer = await this.createOffer(
+        collection,
+        assetId,
+        duration,
+        borrowerAddress,
+        principal,
+        apr
+      );
+    } catch (error) {
+      console.error("GS Create offer: ", error);
+    }
+
+    if (listing.protocol_data.parameters.offer.length > 1) {
+      throw Error("Opensea offer length not supported.");
+    }
+
+    const fulfillAdvancedOrder = () => {
+      const advancedOrder = {
+        parameters: {
+          offerer: listing.protocol_data.parameters.offerer,
+          zone: listing.protocol_data.parameters.zone,
+          offer: listing.protocol_data.parameters.offer as OfferItemStruct[],
+          consideration: listing.protocol_data.parameters
+            .consideration as ConsiderationItemStruct[],
+          orderType: listing.protocol_data.parameters.orderType,
+          startTime: listing.protocol_data.parameters.startTime,
+          endTime: listing.protocol_data.parameters.endTime,
+          zoneHash: listing.protocol_data.parameters.zoneHash,
+          salt: listing.protocol_data.parameters.salt,
+          conduitKey: listing.protocol_data.parameters.conduitKey,
+          totalOriginalConsiderationItems:
+            listing.protocol_data.parameters.totalOriginalConsiderationItems,
+        }, // OrderParameters
+        numerator: 1,
+        denominator: listing.protocol_data.parameters.offer[0].endAmount,
+        signature: listing.protocol_data.signature,
+        extraData: ethers.constants.HashZero,
+      };
+
+      try {
+        return iface.encodeFunctionData("fulfillAdvancedOrder", [
+          advancedOrder,
+          [], // criteriaResolvers
+          ethers.constants.HashZero, // fulfillerConduitKey
+          ethers.constants.AddressZero, // recipient
+        ]);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    };
+
+    const executeParams = {
+      module: this.envConfig.os_module,
+      assetType:
+        osOffer.itemType == 2
+          ? ethers.utils.formatBytes32String("ERC721")
+          : ethers.utils.formatBytes32String("ERC1155"),
+      buyData: fulfillAdvancedOrder(),
+      totalPrice: BigNumber.from(listing.current_price).div(osOffer.endAmount),
+      loanContract: this.envConfig.nftfi_loanContract,
+      loanCoordinator: this.envConfig.nftfi_loanCoordinator,
+      serviceFeeData: {
+        amount: gsOffer.serviceFee.fee.toString(),
+        nonce: gsOffer.serviceFee.feeReceiverNonce,
+        expiry: gsOffer.serviceFee.signatureExpiry,
+        signature: gsOffer.serviceFee.signature,
+      },
+      offer: {
+        loanPrincipalAmount: gsOffer.offer.loanPrincipalAmount,
+        maximumRepaymentAmount: gsOffer.offer.maximumRepaymentAmount,
+        nftCollateralId: gsOffer.offer.nftCollateralId,
+        nftCollateralContract: gsOffer.offer.nftCollateralContract,
+        loanDuration: gsOffer.offer.loanDuration,
+        loanAdminFeeInBasisPoints: gsOffer.offer.loanAdminFeeInBasisPoints,
+        loanERC20Denomination: gsOffer.offer.loanERC20Denomination,
+        referrer: gsOffer.offer.referrer,
+      },
+      lenderSignature: gsOffer.signature,
+      borrowerSettings: {
+        revenueSharePartner: ethers.constants.AddressZero,
+        referralFeeInBasisPoints: 0,
+      },
+    };
+
+    return this.bnpl_contract.execute(executeParams);
+  }
+
+  async executeBnpl(
+    collection: string,
+    assetId: string,
+    assetType: "ERC721" | "ERC1155",
+    duration: string,
+    borrowerAddress: string,
+    principal: string,
+    apr: number,
+    buyData: string,
+    module: string
+  ): Promise<ethers.ContractTransaction> {
+    const listing = await this.getOSListing(collection, assetId);
+    const osOffer = listing.protocol_data.parameters.offer[0];
+
+    let gsOffer;
+    try {
+      gsOffer = await this.createOffer(
+        collection,
+        assetId,
+        duration,
+        borrowerAddress,
+        principal,
+        apr
+      );
+    } catch (error) {
+      console.error("GS Create offer: ", error);
+    }
+
+    const executeParams = {
+      module,
+      assetType: ethers.utils.formatBytes32String(assetType),
+      buyData,
+      totalPrice: BigNumber.from(listing.current_price).div(osOffer.endAmount),
+      loanContract: this.envConfig.nftfi_loanContract,
+      loanCoordinator: this.envConfig.nftfi_loanCoordinator,
+      serviceFeeData: {
+        amount: gsOffer.serviceFee.fee.toString(),
+        nonce: gsOffer.serviceFee.feeReceiverNonce,
+        expiry: gsOffer.serviceFee.signatureExpiry,
+        signature: gsOffer.serviceFee.signature,
+      },
+      offer: {
+        loanPrincipalAmount: gsOffer.offer.loanPrincipalAmount,
+        maximumRepaymentAmount: gsOffer.offer.maximumRepaymentAmount,
+        nftCollateralId: gsOffer.offer.nftCollateralId,
+        nftCollateralContract: gsOffer.offer.nftCollateralContract,
+        loanDuration: gsOffer.offer.loanDuration,
+        loanAdminFeeInBasisPoints: gsOffer.offer.loanAdminFeeInBasisPoints,
+        loanERC20Denomination: gsOffer.offer.loanERC20Denomination,
+        referrer: gsOffer.offer.referrer,
+      },
+      lenderSignature: gsOffer.signature,
+      borrowerSettings: {
+        revenueSharePartner: ethers.constants.AddressZero,
+        referralFeeInBasisPoints: 0,
+      },
+    };
+
+    return this.bnpl_contract.execute(executeParams);
   }
 }

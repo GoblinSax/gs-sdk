@@ -1,3 +1,6 @@
+import { BigNumber } from "ethers";
+import { Nftfi } from "types/typechain";
+
 export type GS_API_CreateOfferResponse = {
   success: boolean;
   body: {
@@ -37,9 +40,20 @@ export type GS_API_CreateOfferResponse = {
           bps: string;
         };
       };
+      id: string;
       signature: string;
+      service_fee: {
+        service_fee: BigNumber;
+        fee_receiver: string;
+        fee_receiver_nonce: string;
+        signature_expiry: number;
+        bnpl_contract: string;
+        chain_id: number;
+        signature: string;
+      };
     };
   };
+  reason?: string;
   message?: string;
 };
 
@@ -48,12 +62,45 @@ export type GS_API_GetLoanTerms = {
   body: {
     maxLoan: number;
     price: number;
-    offers: Record<string, { LTV: number; APR: number }[]>;
+    offers: Record<string, { LTV: number; APR: number; FEE: number }[]>;
   };
   message?: string;
 };
 
 export type GS_API_Collections = {
-  slug: string;
-  asset_contract: string;
-}[];
+  whitelist: {
+    slug: string;
+    asset_contract: string;
+  }[];
+};
+
+export type AlchemyGetLoans = {
+  ownedNfts: {
+    contract: {
+      address: string;
+    };
+    id: {
+      tokenId: string;
+    };
+    title: string;
+  }[];
+};
+
+export enum Version {
+  MAINNET,
+  RINKEBY,
+  GOERLI,
+}
+
+export enum LoanType {
+  NFTfi,
+  BNPL,
+}
+
+export type GetLoansReturnType = Record<
+  string,
+  {
+    loanType: LoanType;
+    loanInfo: Awaited<ReturnType<Nftfi["loanIdToLoan"]>>;
+  }
+>;
