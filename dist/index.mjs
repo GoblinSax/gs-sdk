@@ -4225,6 +4225,11 @@ var Version = /* @__PURE__ */ ((Version2) => {
   Version2[Version2["GOERLI"] = 2] = "GOERLI";
   return Version2;
 })(Version || {});
+var LoanType = /* @__PURE__ */ ((LoanType2) => {
+  LoanType2[LoanType2["NFTfi"] = 0] = "NFTfi";
+  LoanType2[LoanType2["BNPL"] = 1] = "BNPL";
+  return LoanType2;
+})(LoanType || {});
 
 // src/api.ts
 var GoblinSaxAPI = class {
@@ -4609,5 +4614,7 @@ var GoblinSaxAPI = class {
   }
 };
 export {
-  GoblinSaxAPI
+  GoblinSaxAPI,
+  LoanType,
+  Version
 };

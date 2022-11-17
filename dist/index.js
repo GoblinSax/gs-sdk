@@ -25,7 +25,9 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var src_exports = {};
 __export(src_exports, {
-  GoblinSaxAPI: () => GoblinSaxAPI
+  GoblinSaxAPI: () => GoblinSaxAPI,
+  LoanType: () => LoanType,
+  Version: () => Version
 });
 module.exports = __toCommonJS(src_exports);
 
@@ -4256,6 +4258,11 @@ var Version = /* @__PURE__ */ ((Version2) => {
   Version2[Version2["GOERLI"] = 2] = "GOERLI";
   return Version2;
 })(Version || {});
+var LoanType = /* @__PURE__ */ ((LoanType2) => {
+  LoanType2[LoanType2["NFTfi"] = 0] = "NFTfi";
+  LoanType2[LoanType2["BNPL"] = 1] = "BNPL";
+  return LoanType2;
+})(LoanType || {});
 
 // src/api.ts
 var GoblinSaxAPI = class {
@@ -4641,5 +4648,7 @@ var GoblinSaxAPI = class {
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  GoblinSaxAPI
+  GoblinSaxAPI,
+  LoanType,
+  Version
 });
