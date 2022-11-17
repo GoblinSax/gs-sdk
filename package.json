@@ -1,6 +1,6 @@
 {
   "name": "@goblinsax/gs-sdk",
-  "version": "1.0.14",
+  "version": "1.1.1",
   "description": "SDK to take loan from Goblin Sax for user's NFT",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -28,15 +28,16 @@
   },
   "homepage": "https://github.com/GoblinSax/gs-sdk#readme",
   "devDependencies": {
-    "@typechain/ethers-v5": "^10.1.0",
     "mocha": "^10.0.0",
     "tsup": "^6.3.0",
-    "typechain": "^8.1.0",
     "typescript": "^4.8.4"
   },
   "dependencies": {
     "axios": "^0.27.2",
     "dotenv": "^16.0.3",
-    "ethers": "^5.6.9"
+    "ethers": "^5.6.9",
+    "@typechain/ethers-v5": "^10.1.0",
+    "typechain": "^8.1.0"
+
   }
 }
