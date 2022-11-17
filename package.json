@@ -1,6 +1,6 @@
 {
   "name": "@goblinsax/gs-sdk",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "SDK to take loan from Goblin Sax for user's NFT",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -14,6 +14,7 @@
   "scripts": {
     "typechain": "typechain --target=ethers-v5 ./src/abis/**/*.json --out-dir ./types/typechain/",
     "postinstall": "yarn typechain",
+    "prepublish": "yarn build",
     "test": "mocha",
     "build": "tsup src/index.ts --format cjs,esm --dts --clean"
   },
@@ -38,6 +39,5 @@
     "ethers": "^5.6.9",
     "@typechain/ethers-v5": "^10.1.0",
     "typechain": "^8.1.0"
-
   }
 }
