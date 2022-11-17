@@ -30,7 +30,7 @@ async function main(network){
     let whitelist = await gs.getWhitelist()
 
     let owned_nfts;
-
+    console.log(signer.address)
     if (network == 'MAINNET') 
         owned_nfts = await axios.get(`https://api.opensea.io/api/v1/assets?owner=${signer.address}`)
     else if (network == 'GOERLI')
