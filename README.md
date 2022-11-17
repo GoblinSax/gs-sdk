@@ -109,9 +109,10 @@ Returns all active loans done by the user. Alchemy API is used for this purpose 
 The loanId to repay from must be passed to create the repayment.
 
 ## Buy now, pay later (BNPL)
+
 Buy now pay later is a new functionality developed by Goblin sax that allows to buy an asset today and pay for it later on.
 
-To do so, a user has to find an asset of a collection whitelisted by Goblin sax and listed for ser in a marketplace. At the moment we only support Opensea. 
+To do so, a user has to find an asset of a collection whitelisted by Goblin sax and listed for ser in a marketplace. At the moment we only support Opensea.
 Then, it has to call `gs.bnplAllowance` to approve the bnpl contract and after the approval was done, call `gs.bnplOS` to buy the asset.
 
 After the buy was done, the user will have an active loan to pay. Once the loan is paid the asset will be transferred to the user's wallet in the same transaction.
@@ -126,4 +127,8 @@ This function checks if the wallet connected has a limit allowed for the bnpl co
 
 ### `bnplOS(collection: string, assetId: string, duration: string, borrowerAddress: string, principal: string, apr: number): Promise<ethers.ContractTransaction>`
 
-This function is called to trigger a bnpl transaction for an asset in Opensea. It receives the collection address, the asset id, the duration of the loan, the address that will borrow the money, the principal and the APR. The duration, borrowerAddress, and APR values needed are obtained by calling `gs.getTerms(collection, id)`. Before calling this function make sure `gs.bnplAllowance(...)` returns `isAllowanceRequired == true`.
+This function is called to trigger a bnpl transaction for an asset in Opensea. It receives the collection address, the asset id, the duration of the loan, the address that will borrow the money, the principal and the APR. The `duration`, `borrowerAddress`, and `apr` values needed are obtained from calling `gs.getTerms(collection, id)`. Before calling this function make sure `gs.bnplAllowance(...)` returns `isAllowanceRequired == true`.
+
+### `executeBnpl(collection: string, assetId: string, assetType: "ERC721" | "ERC1155", duration: string, borrowerAddress: string, principal: string, apr: number, buyData: string, module: string): Promise<ethers.ContractTransaction>
+
+This function is thought to be used by marketplaces seeking for integration with Goblin sax. `module` is the address of a module following this interface [IMarketModule](https://github.com/GoblinSax/gs-bnpl-contracts/blob/main/src/interfaces/IMarketModule.sol). `buyData` is the encoded data of the `buy` function on the marketplace. The `duration`, `borrowerAddress`, and `apr` values needed are obtained from calling `gs.getTerms(collection, id)`. Before calling this function make sure `gs.bnplAllowance(...)` returns `isAllowanceRequired == true`.

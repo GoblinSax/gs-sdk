@@ -424,37 +424,6 @@ export class GoblinSaxAPI {
       throw Error("Opensea offer length not supported.");
     }
 
-    // const fulfillBasicOrderData = () => {
-    //   const params = {
-    //     considerationToken:
-    //       listing.protocol_data.parameters.consideration[0].token, // considerationToken
-    //     considerationIdentifier: 0, // considerationIdentifier
-    //     considerationAmount:
-    //       listing.protocol_data.parameters.consideration[0].startAmount, // considerationAmount
-    //     offerer: listing.protocol_data.parameters.offerer, // offerer
-    //     zone: listing.protocol_data.parameters.zone, // zone
-    //     offerToken: osOffer.token, // offerToken
-    //     offerIdentifier: osOffer.identifierOrCriteria, // offerIdentifier
-    //     offerAmount: 1, // offerAmount
-    //     basicOrderType: 8, // basicOrderType - ERC721 paying with ERC20
-    //     startTime: listing.protocol_data.parameters.startTime, // startTime
-    //     endTime: listing.protocol_data.parameters.endTime, // endTime
-    //     zoneHash: listing.protocol_data.parameters.zoneHash, // zoneHash
-    //     salt: listing.protocol_data.parameters.salt, // salt
-    //     offererConduitKey: listing.protocol_data.parameters.conduitKey, // offererConduitKey
-    //     fulfillerConduitKey:
-    //       "0x0000000000000000000000000000000000000000000000000000000000000000", // fulfillerConduitKey
-    //     totalOriginalAdditionalRecipients:
-    //       listing.protocol_data.parameters.consideration.length - 1, // totalOriginalAdditionalRecipients
-    //     additionalRecipients: listing.protocol_data.parameters.consideration
-    //       .slice(1)
-    //       .map((c) => ({ amount: c.startAmount, recipient: c.recipient })), // AdditionalRecipient[]
-    //     signature: listing.protocol_data.signature, // signature
-    //   };
-
-    //   return iface.encodeFunctionData("fulfillBasicOrder", [params]);
-    // };
-
     const fulfillAdvancedOrder = () => {
       const advancedOrder = {
         parameters: {
@@ -491,18 +460,73 @@ export class GoblinSaxAPI {
       }
     };
 
-    const buyData = fulfillAdvancedOrder();
-    // const buyData =
-    //   osOffer.startAmount == "1" && osOffer.endAmount == "1"
-    //     ? fulfillBasicOrderData()
-    //     : fulfillAdvancedOrder(),
-
     const executeParams = {
       module: this.envConfig.os_module,
       assetType:
         osOffer.itemType == 2
           ? ethers.utils.formatBytes32String("ERC721")
           : ethers.utils.formatBytes32String("ERC1155"),
+      buyData: fulfillAdvancedOrder(),
+      totalPrice: BigNumber.from(listing.current_price).div(osOffer.endAmount),
+      loanContract: this.envConfig.nftfi_loanContract,
+      loanCoordinator: this.envConfig.nftfi_loanCoordinator,
+      serviceFeeData: {
+        amount: gsOffer.serviceFee.fee.toString(),
+        nonce: gsOffer.serviceFee.feeReceiverNonce,
+        expiry: gsOffer.serviceFee.signatureExpiry,
+        signature: gsOffer.serviceFee.signature,
+      },
+      offer: {
+        loanPrincipalAmount: gsOffer.offer.loanPrincipalAmount,
+        maximumRepaymentAmount: gsOffer.offer.maximumRepaymentAmount,
+        nftCollateralId: gsOffer.offer.nftCollateralId,
+        nftCollateralContract: gsOffer.offer.nftCollateralContract,
+        loanDuration: gsOffer.offer.loanDuration,
+        loanAdminFeeInBasisPoints: gsOffer.offer.loanAdminFeeInBasisPoints,
+        loanERC20Denomination: gsOffer.offer.loanERC20Denomination,
+        referrer: gsOffer.offer.referrer,
+      },
+      lenderSignature: gsOffer.signature,
+      borrowerSettings: {
+        revenueSharePartner: ethers.constants.AddressZero,
+        referralFeeInBasisPoints: 0,
+      },
+    };
+
+    return this.bnpl_contract.execute(executeParams);
+  }
+
+  async executeBnpl(
+    collection: string,
+    assetId: string,
+    assetType: "ERC721" | "ERC1155",
+    duration: string,
+    borrowerAddress: string,
+    principal: string,
+    apr: number,
+    buyData: string,
+    module: string
+  ): Promise<ethers.ContractTransaction> {
+    const listing = await this.getOSListing(collection, assetId);
+    const osOffer = listing.protocol_data.parameters.offer[0];
+
+    let gsOffer;
+    try {
+      gsOffer = await this.createOffer(
+        collection,
+        assetId,
+        duration,
+        borrowerAddress,
+        principal,
+        apr
+      );
+    } catch (error) {
+      console.error("GS Create offer: ", error);
+    }
+
+    const executeParams = {
+      module,
+      assetType: ethers.utils.formatBytes32String(assetType),
       buyData,
       totalPrice: BigNumber.from(listing.current_price).div(osOffer.endAmount),
       loanContract: this.envConfig.nftfi_loanContract,
