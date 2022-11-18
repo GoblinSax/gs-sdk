@@ -4598,9 +4598,7 @@ var GoblinSaxAPI = class {
     };
     return this.bnpl_contract.execute(executeParams);
   }
-  async executeBnpl(collection, assetId, assetType, duration, borrowerAddress, principal, apr, buyData, module2) {
-    const listing = await this.getOSListing(collection, assetId);
-    const osOffer = listing.protocol_data.parameters.offer[0];
+  async executeBnpl(collection, assetId, marketPrice, assetType, duration, borrowerAddress, principal, apr, buyData, module2) {
     let gsOffer;
     try {
       gsOffer = await this.createOffer(
@@ -4618,7 +4616,7 @@ var GoblinSaxAPI = class {
       module: module2,
       assetType: import_ethers.ethers.utils.formatBytes32String(assetType),
       buyData,
-      totalPrice: import_ethers.BigNumber.from(listing.current_price).div(osOffer.endAmount),
+      totalPrice: marketPrice,
       loanContract: this.envConfig.nftfi_loanContract,
       loanCoordinator: this.envConfig.nftfi_loanCoordinator,
       serviceFeeData: {

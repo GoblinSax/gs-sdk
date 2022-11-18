@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber, BigNumberish, ethers } from "ethers";
 
 import NFTFI_ABI from "./abis/nftfi.json";
 import ERC721_ABI from "./abis/erc721.json";
@@ -499,6 +499,7 @@ export class GoblinSaxAPI {
   async executeBnpl(
     collection: string,
     assetId: string,
+    marketPrice: BigNumberish,
     assetType: "ERC721" | "ERC1155",
     duration: string,
     borrowerAddress: string,
@@ -507,9 +508,6 @@ export class GoblinSaxAPI {
     buyData: string,
     module: string
   ): Promise<ethers.ContractTransaction> {
-    const listing = await this.getOSListing(collection, assetId);
-    const osOffer = listing.protocol_data.parameters.offer[0];
-
     let gsOffer;
     try {
       gsOffer = await this.createOffer(
@@ -528,7 +526,7 @@ export class GoblinSaxAPI {
       module,
       assetType: ethers.utils.formatBytes32String(assetType),
       buyData,
-      totalPrice: BigNumber.from(listing.current_price).div(osOffer.endAmount),
+      totalPrice: marketPrice,
       loanContract: this.envConfig.nftfi_loanContract,
       loanCoordinator: this.envConfig.nftfi_loanCoordinator,
       serviceFeeData: {

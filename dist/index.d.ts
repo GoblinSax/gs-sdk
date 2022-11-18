@@ -2195,7 +2195,7 @@ declare class GoblinSaxAPI {
         approve: () => Promise<ethers.ContractTransaction>;
     }>;
     bnplOS(collection: string, assetId: string, duration: string, borrowerAddress: string, principal: string, apr: number): Promise<ethers.ContractTransaction>;
-    executeBnpl(collection: string, assetId: string, assetType: "ERC721" | "ERC1155", duration: string, borrowerAddress: string, principal: string, apr: number, buyData: string, module: string): Promise<ethers.ContractTransaction>;
+    executeBnpl(collection: string, assetId: string, marketPrice: BigNumberish, assetType: "ERC721" | "ERC1155", duration: string, borrowerAddress: string, principal: string, apr: number, buyData: string, module: string): Promise<ethers.ContractTransaction>;
 }
 
 export { AlchemyGetLoans, GS_API_Collections, GS_API_CreateOfferResponse, GS_API_GetLoanTerms, GetLoansReturnType, GoblinSaxAPI, LoanType, Version };
