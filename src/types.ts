@@ -87,9 +87,8 @@ export type AlchemyGetLoans = {
 };
 
 export enum Version {
-  MAINNET,
-  RINKEBY,
-  GOERLI,
+  MAINNET = "mainnet",
+  GOERLI = "goerli",
 }
 
 export enum LoanType {

@@ -383,6 +383,11 @@
     lodash "^4.17.15"
     ts-essentials "^7.0.1"
 
+"@types/node@^18.11.9":
+  version "18.11.9"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.9.tgz#02d013de7058cea16d36168ef2fc653464cfbad4"
+  integrity sha512-CRpX21/kGdzjOpFsZSkcrXMGIBWMGNIHXXBVFSH+ggkftxg+XYP20TESbh+zFvFj3EQOl5byk0HTRn1IL6hbqg==
+
 "@types/prettier@^2.1.1":
   version "2.7.1"
   resolved "https://registry.npmjs.org/@types/prettier/-/prettier-2.7.1.tgz"
