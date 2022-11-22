@@ -73,8 +73,6 @@ async function main(version: Version) {
     fee.toString()
   );
 
-  console.log("fee: ", fee.toString());
-
   // Delay to avoid http:429 response from Opensea
   await promiseTimeout(2000);
 
@@ -83,9 +81,6 @@ async function main(version: Version) {
     await res.wait();
   }
 
-  console.log({ duration });
-  console.log({ p: principal.toString() });
-  console.log({ apr: conditions.APR });
   // buy asset.
   const receipt = await gs.bnplOS(
     COLLECTION_ADDRESS,
@@ -96,7 +91,8 @@ async function main(version: Version) {
     conditions.APR
   );
 
-  console.log(receipt);
+  
+  console.log();
 }
 
 main(Version.GOERLI);
