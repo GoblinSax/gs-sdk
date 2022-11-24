@@ -70,13 +70,16 @@ interface BnplInterface extends utils.Interface {
     functions: {
         "ASSET_TYPE_ERC1155()": FunctionFragment;
         "ASSET_TYPE_ERC721()": FunctionFragment;
+        "HUNDRED_PERCENT()": FunctionFragment;
         "acceptOwnership()": FunctionFragment;
         "execute((address,bytes32,bytes,uint256,address,address,(uint256,uint256,uint256,bytes),(uint256,uint256,uint256,address,uint32,uint16,address,address),(uint256,uint256,address,bytes),(address,uint16)))": FunctionFragment;
         "feeReceiver()": FunctionFragment;
         "getChainID()": FunctionFragment;
+        "getLoanCap(uint256)": FunctionFragment;
         "invalidateNonce(uint256)": FunctionFragment;
         "isModuleAllowed(address)": FunctionFragment;
         "isValidNonce(address,uint256)": FunctionFragment;
+        "loanCapBps()": FunctionFragment;
         "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)": FunctionFragment;
         "onERC1155Received(address,address,uint256,uint256,bytes)": FunctionFragment;
         "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
@@ -84,20 +87,24 @@ interface BnplInterface extends utils.Interface {
         "pendingOwner()": FunctionFragment;
         "renounceOwnership()": FunctionFragment;
         "setFeeReceiver(address)": FunctionFragment;
+        "setLoanCapBps(uint256)": FunctionFragment;
         "setModuleAllowance(address,bool)": FunctionFragment;
         "supportsInterface(bytes4)": FunctionFragment;
         "transferOwnership(address)": FunctionFragment;
     };
-    getFunction(nameOrSignatureOrTopic: "ASSET_TYPE_ERC1155" | "ASSET_TYPE_ERC721" | "acceptOwnership" | "execute" | "feeReceiver" | "getChainID" | "invalidateNonce" | "isModuleAllowed" | "isValidNonce" | "onERC1155BatchReceived" | "onERC1155Received" | "onERC721Received" | "owner" | "pendingOwner" | "renounceOwnership" | "setFeeReceiver" | "setModuleAllowance" | "supportsInterface" | "transferOwnership"): FunctionFragment;
+    getFunction(nameOrSignatureOrTopic: "ASSET_TYPE_ERC1155" | "ASSET_TYPE_ERC721" | "HUNDRED_PERCENT" | "acceptOwnership" | "execute" | "feeReceiver" | "getChainID" | "getLoanCap" | "invalidateNonce" | "isModuleAllowed" | "isValidNonce" | "loanCapBps" | "onERC1155BatchReceived" | "onERC1155Received" | "onERC721Received" | "owner" | "pendingOwner" | "renounceOwnership" | "setFeeReceiver" | "setLoanCapBps" | "setModuleAllowance" | "supportsInterface" | "transferOwnership"): FunctionFragment;
     encodeFunctionData(functionFragment: "ASSET_TYPE_ERC1155", values?: undefined): string;
     encodeFunctionData(functionFragment: "ASSET_TYPE_ERC721", values?: undefined): string;
+    encodeFunctionData(functionFragment: "HUNDRED_PERCENT", values?: undefined): string;
     encodeFunctionData(functionFragment: "acceptOwnership", values?: undefined): string;
     encodeFunctionData(functionFragment: "execute", values: [Bnpl.ExecutionStruct]): string;
     encodeFunctionData(functionFragment: "feeReceiver", values?: undefined): string;
     encodeFunctionData(functionFragment: "getChainID", values?: undefined): string;
+    encodeFunctionData(functionFragment: "getLoanCap", values: [PromiseOrValue<BigNumberish>]): string;
     encodeFunctionData(functionFragment: "invalidateNonce", values: [PromiseOrValue<BigNumberish>]): string;
     encodeFunctionData(functionFragment: "isModuleAllowed", values: [PromiseOrValue<string>]): string;
     encodeFunctionData(functionFragment: "isValidNonce", values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]): string;
+    encodeFunctionData(functionFragment: "loanCapBps", values?: undefined): string;
     encodeFunctionData(functionFragment: "onERC1155BatchReceived", values: [
         PromiseOrValue<string>,
         PromiseOrValue<string>,
@@ -122,18 +129,22 @@ interface BnplInterface extends utils.Interface {
     encodeFunctionData(functionFragment: "pendingOwner", values?: undefined): string;
     encodeFunctionData(functionFragment: "renounceOwnership", values?: undefined): string;
     encodeFunctionData(functionFragment: "setFeeReceiver", values: [PromiseOrValue<string>]): string;
+    encodeFunctionData(functionFragment: "setLoanCapBps", values: [PromiseOrValue<BigNumberish>]): string;
     encodeFunctionData(functionFragment: "setModuleAllowance", values: [PromiseOrValue<string>, PromiseOrValue<boolean>]): string;
     encodeFunctionData(functionFragment: "supportsInterface", values: [PromiseOrValue<BytesLike>]): string;
     encodeFunctionData(functionFragment: "transferOwnership", values: [PromiseOrValue<string>]): string;
     decodeFunctionResult(functionFragment: "ASSET_TYPE_ERC1155", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "ASSET_TYPE_ERC721", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "HUNDRED_PERCENT", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "acceptOwnership", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "execute", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "feeReceiver", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "getChainID", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "getLoanCap", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "invalidateNonce", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "isModuleAllowed", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "isValidNonce", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "loanCapBps", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "onERC1155BatchReceived", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "onERC1155Received", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "onERC721Received", data: BytesLike): Result;
@@ -141,6 +152,7 @@ interface BnplInterface extends utils.Interface {
     decodeFunctionResult(functionFragment: "pendingOwner", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "renounceOwnership", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "setFeeReceiver", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "setLoanCapBps", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "setModuleAllowance", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "supportsInterface", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "transferOwnership", data: BytesLike): Result;
@@ -151,6 +163,7 @@ interface BnplInterface extends utils.Interface {
         "OwnershipTransferred(address,address)": EventFragment;
         "SetAllowedMarketModules(address)": EventFragment;
         "SetFeeReceiver(address)": EventFragment;
+        "SetLoanCap(uint256)": EventFragment;
     };
     getEvent(nameOrSignatureOrTopic: "BnplExecuted"): EventFragment;
     getEvent(nameOrSignatureOrTopic: "ModuleAllowance"): EventFragment;
@@ -158,6 +171,7 @@ interface BnplInterface extends utils.Interface {
     getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
     getEvent(nameOrSignatureOrTopic: "SetAllowedMarketModules"): EventFragment;
     getEvent(nameOrSignatureOrTopic: "SetFeeReceiver"): EventFragment;
+    getEvent(nameOrSignatureOrTopic: "SetLoanCap"): EventFragment;
 }
 interface BnplExecutedEventObject {
     borrower: string;
@@ -215,6 +229,11 @@ declare type SetFeeReceiverEvent = TypedEvent<[
     string
 ], SetFeeReceiverEventObject>;
 declare type SetFeeReceiverEventFilter = TypedEventFilter<SetFeeReceiverEvent>;
+interface SetLoanCapEventObject {
+    loanCap: BigNumber;
+}
+declare type SetLoanCapEvent = TypedEvent<[BigNumber], SetLoanCapEventObject>;
+declare type SetLoanCapEventFilter = TypedEventFilter<SetLoanCapEvent>;
 declare namespace Bnpl {
     type ServiceFeeStruct = {
         amount: PromiseOrValue<BigNumberish>;
@@ -286,6 +305,7 @@ interface Bnpl extends BaseContract {
     functions: {
         ASSET_TYPE_ERC1155(overrides?: CallOverrides): Promise<[string]>;
         ASSET_TYPE_ERC721(overrides?: CallOverrides): Promise<[string]>;
+        HUNDRED_PERCENT(overrides?: CallOverrides): Promise<[BigNumber]>;
         acceptOwnership(overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
@@ -294,11 +314,13 @@ interface Bnpl extends BaseContract {
         }): Promise<ContractTransaction>;
         feeReceiver(overrides?: CallOverrides): Promise<[string]>;
         getChainID(overrides?: CallOverrides): Promise<[BigNumber]>;
+        getLoanCap(_price: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<[BigNumber]>;
         invalidateNonce(_nonce: PromiseOrValue<BigNumberish>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
         isModuleAllowed(arg0: PromiseOrValue<string>, overrides?: CallOverrides): Promise<[boolean]>;
         isValidNonce(_lender: PromiseOrValue<string>, _nonce: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<[boolean]>;
+        loanCapBps(overrides?: CallOverrides): Promise<[BigNumber]>;
         onERC1155BatchReceived(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BigNumberish>[], arg3: PromiseOrValue<BigNumberish>[], arg4: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
@@ -316,6 +338,9 @@ interface Bnpl extends BaseContract {
         setFeeReceiver(_feeReceiver: PromiseOrValue<string>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
+        setLoanCapBps(_loanCapBps: PromiseOrValue<BigNumberish>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<ContractTransaction>;
         setModuleAllowance(_module: PromiseOrValue<string>, _allowed: PromiseOrValue<boolean>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
@@ -326,6 +351,7 @@ interface Bnpl extends BaseContract {
     };
     ASSET_TYPE_ERC1155(overrides?: CallOverrides): Promise<string>;
     ASSET_TYPE_ERC721(overrides?: CallOverrides): Promise<string>;
+    HUNDRED_PERCENT(overrides?: CallOverrides): Promise<BigNumber>;
     acceptOwnership(overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
@@ -334,11 +360,13 @@ interface Bnpl extends BaseContract {
     }): Promise<ContractTransaction>;
     feeReceiver(overrides?: CallOverrides): Promise<string>;
     getChainID(overrides?: CallOverrides): Promise<BigNumber>;
+    getLoanCap(_price: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>;
     invalidateNonce(_nonce: PromiseOrValue<BigNumberish>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
     isModuleAllowed(arg0: PromiseOrValue<string>, overrides?: CallOverrides): Promise<boolean>;
     isValidNonce(_lender: PromiseOrValue<string>, _nonce: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<boolean>;
+    loanCapBps(overrides?: CallOverrides): Promise<BigNumber>;
     onERC1155BatchReceived(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BigNumberish>[], arg3: PromiseOrValue<BigNumberish>[], arg4: PromiseOrValue<BytesLike>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
@@ -356,6 +384,9 @@ interface Bnpl extends BaseContract {
     setFeeReceiver(_feeReceiver: PromiseOrValue<string>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
+    setLoanCapBps(_loanCapBps: PromiseOrValue<BigNumberish>, overrides?: Overrides & {
+        from?: PromiseOrValue<string>;
+    }): Promise<ContractTransaction>;
     setModuleAllowance(_module: PromiseOrValue<string>, _allowed: PromiseOrValue<boolean>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
@@ -366,13 +397,16 @@ interface Bnpl extends BaseContract {
     callStatic: {
         ASSET_TYPE_ERC1155(overrides?: CallOverrides): Promise<string>;
         ASSET_TYPE_ERC721(overrides?: CallOverrides): Promise<string>;
+        HUNDRED_PERCENT(overrides?: CallOverrides): Promise<BigNumber>;
         acceptOwnership(overrides?: CallOverrides): Promise<void>;
         execute(_params: Bnpl.ExecutionStruct, overrides?: CallOverrides): Promise<boolean>;
         feeReceiver(overrides?: CallOverrides): Promise<string>;
         getChainID(overrides?: CallOverrides): Promise<BigNumber>;
+        getLoanCap(_price: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>;
         invalidateNonce(_nonce: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<void>;
         isModuleAllowed(arg0: PromiseOrValue<string>, overrides?: CallOverrides): Promise<boolean>;
         isValidNonce(_lender: PromiseOrValue<string>, _nonce: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<boolean>;
+        loanCapBps(overrides?: CallOverrides): Promise<BigNumber>;
         onERC1155BatchReceived(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BigNumberish>[], arg3: PromiseOrValue<BigNumberish>[], arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         onERC1155Received(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BigNumberish>, arg3: PromiseOrValue<BigNumberish>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         onERC721Received(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BigNumberish>, arg3: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
@@ -380,6 +414,7 @@ interface Bnpl extends BaseContract {
         pendingOwner(overrides?: CallOverrides): Promise<string>;
         renounceOwnership(overrides?: CallOverrides): Promise<void>;
         setFeeReceiver(_feeReceiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<void>;
+        setLoanCapBps(_loanCapBps: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<void>;
         setModuleAllowance(_module: PromiseOrValue<string>, _allowed: PromiseOrValue<boolean>, overrides?: CallOverrides): Promise<void>;
         supportsInterface(_interfaceId: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<boolean>;
         transferOwnership(newOwner: PromiseOrValue<string>, overrides?: CallOverrides): Promise<void>;
@@ -397,10 +432,13 @@ interface Bnpl extends BaseContract {
         SetAllowedMarketModules(module?: PromiseOrValue<string> | null): SetAllowedMarketModulesEventFilter;
         "SetFeeReceiver(address)"(feeReceiver?: PromiseOrValue<string> | null): SetFeeReceiverEventFilter;
         SetFeeReceiver(feeReceiver?: PromiseOrValue<string> | null): SetFeeReceiverEventFilter;
+        "SetLoanCap(uint256)"(loanCap?: null): SetLoanCapEventFilter;
+        SetLoanCap(loanCap?: null): SetLoanCapEventFilter;
     };
     estimateGas: {
         ASSET_TYPE_ERC1155(overrides?: CallOverrides): Promise<BigNumber>;
         ASSET_TYPE_ERC721(overrides?: CallOverrides): Promise<BigNumber>;
+        HUNDRED_PERCENT(overrides?: CallOverrides): Promise<BigNumber>;
         acceptOwnership(overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
@@ -409,11 +447,13 @@ interface Bnpl extends BaseContract {
         }): Promise<BigNumber>;
         feeReceiver(overrides?: CallOverrides): Promise<BigNumber>;
         getChainID(overrides?: CallOverrides): Promise<BigNumber>;
+        getLoanCap(_price: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>;
         invalidateNonce(_nonce: PromiseOrValue<BigNumberish>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
         isModuleAllowed(arg0: PromiseOrValue<string>, overrides?: CallOverrides): Promise<BigNumber>;
         isValidNonce(_lender: PromiseOrValue<string>, _nonce: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>;
+        loanCapBps(overrides?: CallOverrides): Promise<BigNumber>;
         onERC1155BatchReceived(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BigNumberish>[], arg3: PromiseOrValue<BigNumberish>[], arg4: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
@@ -431,6 +471,9 @@ interface Bnpl extends BaseContract {
         setFeeReceiver(_feeReceiver: PromiseOrValue<string>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
+        setLoanCapBps(_loanCapBps: PromiseOrValue<BigNumberish>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<BigNumber>;
         setModuleAllowance(_module: PromiseOrValue<string>, _allowed: PromiseOrValue<boolean>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
@@ -442,6 +485,7 @@ interface Bnpl extends BaseContract {
     populateTransaction: {
         ASSET_TYPE_ERC1155(overrides?: CallOverrides): Promise<PopulatedTransaction>;
         ASSET_TYPE_ERC721(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        HUNDRED_PERCENT(overrides?: CallOverrides): Promise<PopulatedTransaction>;
         acceptOwnership(overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;
@@ -450,11 +494,13 @@ interface Bnpl extends BaseContract {
         }): Promise<PopulatedTransaction>;
         feeReceiver(overrides?: CallOverrides): Promise<PopulatedTransaction>;
         getChainID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        getLoanCap(_price: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
         invalidateNonce(_nonce: PromiseOrValue<BigNumberish>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;
         isModuleAllowed(arg0: PromiseOrValue<string>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
         isValidNonce(_lender: PromiseOrValue<string>, _nonce: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        loanCapBps(overrides?: CallOverrides): Promise<PopulatedTransaction>;
         onERC1155BatchReceived(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BigNumberish>[], arg3: PromiseOrValue<BigNumberish>[], arg4: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;
@@ -470,6 +516,9 @@ interface Bnpl extends BaseContract {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;
         setFeeReceiver(_feeReceiver: PromiseOrValue<string>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<PopulatedTransaction>;
+        setLoanCapBps(_loanCapBps: PromiseOrValue<BigNumberish>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;
         setModuleAllowance(_module: PromiseOrValue<string>, _allowed: PromiseOrValue<boolean>, overrides?: Overrides & {
@@ -2112,9 +2161,8 @@ declare type AlchemyGetLoans = {
     }[];
 };
 declare enum Version {
-    MAINNET = 0,
-    RINKEBY = 1,
-    GOERLI = 2
+    MAINNET = "mainnet",
+    GOERLI = "goerli"
 }
 declare enum LoanType {
     NFTfi = 0,
@@ -2190,6 +2238,7 @@ declare class GoblinSaxAPI {
     }>;
     beginLoan(collection: any, assetId: any, duration: any, borrowerAddress: any, principal: string, apr: any, _referral: any): Promise<ethers.ContractTransaction>;
     getOSListing(collection: string, assetId: string): Promise<any>;
+    getBnplLoanCap(marketPrice: string): Promise<BigNumber>;
     bnplAllowance(token: string, marketPrice: string, principal: string, gsFee: string): Promise<{
         isAllowanceRequired: boolean;
         approve: () => Promise<ethers.ContractTransaction>;

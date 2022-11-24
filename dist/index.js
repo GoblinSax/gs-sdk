@@ -1796,14 +1796,35 @@ var nftfiNoteReceipt_default = [
 var bnpl_default = [
   {
     inputs: [
-      { internalType: "address", name: "_feeReceiver", type: "address" }
+      {
+        internalType: "address",
+        name: "_feeReceiver",
+        type: "address"
+      }
     ],
     stateMutability: "nonpayable",
     type: "constructor"
   },
-  { inputs: [], name: "Bnpl__execute_invalidAssetType", type: "error" },
-  { inputs: [], name: "Bnpl__execute_invalidModule", type: "error" },
-  { inputs: [], name: "Bnpl__execute_unsuccessfulBuy", type: "error" },
+  {
+    inputs: [],
+    name: "Bnpl__execute_invalidAssetType",
+    type: "error"
+  },
+  {
+    inputs: [],
+    name: "Bnpl__execute_invalidLoanPrincipalAmount",
+    type: "error"
+  },
+  {
+    inputs: [],
+    name: "Bnpl__execute_invalidModule",
+    type: "error"
+  },
+  {
+    inputs: [],
+    name: "Bnpl__execute_unsuccessfulBuy",
+    type: "error"
+  },
   {
     inputs: [],
     name: "Bnpl__setFeeReceiver_invalidAddress",
@@ -1811,10 +1832,19 @@ var bnpl_default = [
   },
   {
     inputs: [],
+    name: "Bnpl__setLoanCapBps_invalidLoanCapBps",
+    type: "error"
+  },
+  {
+    inputs: [],
     name: "Bnpl__setModuleAllowance_invalidAddress",
     type: "error"
   },
-  { inputs: [], name: "Bnpl__validateServiceFee_expired", type: "error" },
+  {
+    inputs: [],
+    name: "Bnpl__validateServiceFee_expired",
+    type: "error"
+  },
   {
     inputs: [],
     name: "Bnpl__validateServiceFee_invalidNonce",
@@ -1951,16 +1981,54 @@ var bnpl_default = [
     type: "event"
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "loanCap",
+        type: "uint256"
+      }
+    ],
+    name: "SetLoanCap",
+    type: "event"
+  },
+  {
     inputs: [],
     name: "ASSET_TYPE_ERC1155",
-    outputs: [{ internalType: "bytes32", name: "", type: "bytes32" }],
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32"
+      }
+    ],
     stateMutability: "view",
     type: "function"
   },
   {
     inputs: [],
     name: "ASSET_TYPE_ERC721",
-    outputs: [{ internalType: "bytes32", name: "", type: "bytes32" }],
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [],
+    name: "HUNDRED_PERCENT",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      }
+    ],
     stateMutability: "view",
     type: "function"
   },
@@ -1975,9 +2043,21 @@ var bnpl_default = [
     inputs: [
       {
         components: [
-          { internalType: "address", name: "module", type: "address" },
-          { internalType: "bytes32", name: "assetType", type: "bytes32" },
-          { internalType: "bytes", name: "buyData", type: "bytes" },
+          {
+            internalType: "address",
+            name: "module",
+            type: "address"
+          },
+          {
+            internalType: "bytes32",
+            name: "assetType",
+            type: "bytes32"
+          },
+          {
+            internalType: "bytes",
+            name: "buyData",
+            type: "bytes"
+          },
           {
             internalType: "uint256",
             name: "totalPrice",
@@ -2000,13 +2080,21 @@ var bnpl_default = [
                 name: "amount",
                 type: "uint256"
               },
-              { internalType: "uint256", name: "nonce", type: "uint256" },
+              {
+                internalType: "uint256",
+                name: "nonce",
+                type: "uint256"
+              },
               {
                 internalType: "uint256",
                 name: "expiry",
                 type: "uint256"
               },
-              { internalType: "bytes", name: "signature", type: "bytes" }
+              {
+                internalType: "bytes",
+                name: "signature",
+                type: "bytes"
+              }
             ],
             internalType: "struct Bnpl.ServiceFee",
             name: "serviceFeeData",
@@ -2061,7 +2149,11 @@ var bnpl_default = [
           },
           {
             components: [
-              { internalType: "uint256", name: "nonce", type: "uint256" },
+              {
+                internalType: "uint256",
+                name: "nonce",
+                type: "uint256"
+              },
               {
                 internalType: "uint256",
                 name: "expiry",
@@ -2072,7 +2164,11 @@ var bnpl_default = [
                 name: "signer",
                 type: "address"
               },
-              { internalType: "bytes", name: "signature", type: "bytes" }
+              {
+                internalType: "bytes",
+                name: "signature",
+                type: "bytes"
+              }
             ],
             internalType: "struct Signature",
             name: "lenderSignature",
@@ -2102,27 +2198,68 @@ var bnpl_default = [
       }
     ],
     name: "execute",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool"
+      }
+    ],
     stateMutability: "nonpayable",
     type: "function"
   },
   {
     inputs: [],
     name: "feeReceiver",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address"
+      }
+    ],
     stateMutability: "view",
     type: "function"
   },
   {
     inputs: [],
     name: "getChainID",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      }
+    ],
     stateMutability: "view",
     type: "function"
   },
   {
     inputs: [
-      { internalType: "uint256", name: "_nonce", type: "uint256" }
+      {
+        internalType: "uint256",
+        name: "_price",
+        type: "uint256"
+      }
+    ],
+    name: "getLoanCap",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_nonce",
+        type: "uint256"
+      }
     ],
     name: "invalidateNonce",
     outputs: [],
@@ -2130,71 +2267,196 @@ var bnpl_default = [
     type: "function"
   },
   {
-    inputs: [{ internalType: "address", name: "", type: "address" }],
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address"
+      }
+    ],
     name: "isModuleAllowed",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool"
+      }
+    ],
     stateMutability: "view",
     type: "function"
   },
   {
     inputs: [
-      { internalType: "address", name: "_lender", type: "address" },
-      { internalType: "uint256", name: "_nonce", type: "uint256" }
+      {
+        internalType: "address",
+        name: "_lender",
+        type: "address"
+      },
+      {
+        internalType: "uint256",
+        name: "_nonce",
+        type: "uint256"
+      }
     ],
     name: "isValidNonce",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [],
+    name: "loanCapBps",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      }
+    ],
     stateMutability: "view",
     type: "function"
   },
   {
     inputs: [
-      { internalType: "address", name: "", type: "address" },
-      { internalType: "address", name: "", type: "address" },
-      { internalType: "uint256[]", name: "", type: "uint256[]" },
-      { internalType: "uint256[]", name: "", type: "uint256[]" },
-      { internalType: "bytes", name: "", type: "bytes" }
+      {
+        internalType: "address",
+        name: "",
+        type: "address"
+      },
+      {
+        internalType: "address",
+        name: "",
+        type: "address"
+      },
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]"
+      },
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]"
+      },
+      {
+        internalType: "bytes",
+        name: "",
+        type: "bytes"
+      }
     ],
     name: "onERC1155BatchReceived",
-    outputs: [{ internalType: "bytes4", name: "", type: "bytes4" }],
+    outputs: [
+      {
+        internalType: "bytes4",
+        name: "",
+        type: "bytes4"
+      }
+    ],
     stateMutability: "nonpayable",
     type: "function"
   },
   {
     inputs: [
-      { internalType: "address", name: "", type: "address" },
-      { internalType: "address", name: "", type: "address" },
-      { internalType: "uint256", name: "", type: "uint256" },
-      { internalType: "uint256", name: "", type: "uint256" },
-      { internalType: "bytes", name: "", type: "bytes" }
+      {
+        internalType: "address",
+        name: "",
+        type: "address"
+      },
+      {
+        internalType: "address",
+        name: "",
+        type: "address"
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      },
+      {
+        internalType: "bytes",
+        name: "",
+        type: "bytes"
+      }
     ],
     name: "onERC1155Received",
-    outputs: [{ internalType: "bytes4", name: "", type: "bytes4" }],
+    outputs: [
+      {
+        internalType: "bytes4",
+        name: "",
+        type: "bytes4"
+      }
+    ],
     stateMutability: "nonpayable",
     type: "function"
   },
   {
     inputs: [
-      { internalType: "address", name: "", type: "address" },
-      { internalType: "address", name: "", type: "address" },
-      { internalType: "uint256", name: "", type: "uint256" },
-      { internalType: "bytes", name: "", type: "bytes" }
+      {
+        internalType: "address",
+        name: "",
+        type: "address"
+      },
+      {
+        internalType: "address",
+        name: "",
+        type: "address"
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      },
+      {
+        internalType: "bytes",
+        name: "",
+        type: "bytes"
+      }
     ],
     name: "onERC721Received",
-    outputs: [{ internalType: "bytes4", name: "", type: "bytes4" }],
+    outputs: [
+      {
+        internalType: "bytes4",
+        name: "",
+        type: "bytes4"
+      }
+    ],
     stateMutability: "nonpayable",
     type: "function"
   },
   {
     inputs: [],
     name: "owner",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address"
+      }
+    ],
     stateMutability: "view",
     type: "function"
   },
   {
     inputs: [],
     name: "pendingOwner",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address"
+      }
+    ],
     stateMutability: "view",
     type: "function"
   },
@@ -2207,7 +2469,11 @@ var bnpl_default = [
   },
   {
     inputs: [
-      { internalType: "address", name: "_feeReceiver", type: "address" }
+      {
+        internalType: "address",
+        name: "_feeReceiver",
+        type: "address"
+      }
     ],
     name: "setFeeReceiver",
     outputs: [],
@@ -2216,8 +2482,29 @@ var bnpl_default = [
   },
   {
     inputs: [
-      { internalType: "address", name: "_module", type: "address" },
-      { internalType: "bool", name: "_allowed", type: "bool" }
+      {
+        internalType: "uint256",
+        name: "_loanCapBps",
+        type: "uint256"
+      }
+    ],
+    name: "setLoanCapBps",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_module",
+        type: "address"
+      },
+      {
+        internalType: "bool",
+        name: "_allowed",
+        type: "bool"
+      }
     ],
     name: "setModuleAllowance",
     outputs: [],
@@ -2226,16 +2513,30 @@ var bnpl_default = [
   },
   {
     inputs: [
-      { internalType: "bytes4", name: "_interfaceId", type: "bytes4" }
+      {
+        internalType: "bytes4",
+        name: "_interfaceId",
+        type: "bytes4"
+      }
     ],
     name: "supportsInterface",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool"
+      }
+    ],
     stateMutability: "view",
     type: "function"
   },
   {
     inputs: [
-      { internalType: "address", name: "newOwner", type: "address" }
+      {
+        internalType: "address",
+        name: "newOwner",
+        type: "address"
+      }
     ],
     name: "transferOwnership",
     outputs: [],
@@ -4253,9 +4554,8 @@ var seaport_default = [
 
 // src/types.ts
 var Version = /* @__PURE__ */ ((Version2) => {
-  Version2[Version2["MAINNET"] = 0] = "MAINNET";
-  Version2[Version2["RINKEBY"] = 1] = "RINKEBY";
-  Version2[Version2["GOERLI"] = 2] = "GOERLI";
+  Version2["MAINNET"] = "mainnet";
+  Version2["GOERLI"] = "goerli";
   return Version2;
 })(Version || {});
 var LoanType = /* @__PURE__ */ ((LoanType2) => {
@@ -4268,7 +4568,7 @@ var LoanType = /* @__PURE__ */ ((LoanType2) => {
 var GoblinSaxAPI = class {
   constructor(signer, apiKey, version) {
     switch (version) {
-      case 0 /* MAINNET */:
+      case "mainnet" /* MAINNET */:
         this.envConfig = {
           gs_api: "https://api.goblinsax.xyz/collections",
           os_api: "https://api.opensea.io/v2/orders/goerli/seaport",
@@ -4283,7 +4583,7 @@ var GoblinSaxAPI = class {
           os_module: "0x0000000000000000000000000000000000000001"
         };
         break;
-      case 2 /* GOERLI */:
+      case "goerli" /* GOERLI */:
         this.envConfig = {
           gs_api: "https://goerli-api.goblinsax.xyz",
           os_api: "https://testnets-api.opensea.io/v2/orders/goerli/seaport",
@@ -4294,7 +4594,7 @@ var GoblinSaxAPI = class {
           nftfi_loanContract: "0x77097f421CEb2454eB5F77898d25159ff3C7381d",
           nftfi_loanCoordinator: "0x97B55Db860CfB0E25F74d415aC23FA4dd1495C86",
           weth: "0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6",
-          bnpl: "0x6E982EA0cc19c0A2f375f106519BA1cE973a7d8d",
+          bnpl: "0xDECd2D4Bd416082B8ad1cF6387eefC39Ae02c696",
           os_module: "0x37f381F0d024D1107eBBCAbD6280501B3bF88b8D"
         };
         break;
@@ -4500,6 +4800,9 @@ var GoblinSaxAPI = class {
       throw new Error("Listing not found for asset provided");
     }
     return listing;
+  }
+  async getBnplLoanCap(marketPrice) {
+    return this.bnpl_contract.getLoanCap(marketPrice);
   }
   async bnplAllowance(token, marketPrice, principal, gsFee) {
     const contract = new import_ethers.ethers.Contract(
