@@ -4594,7 +4594,7 @@ var GoblinSaxAPI = class {
           nftfi_loanContract: "0x77097f421CEb2454eB5F77898d25159ff3C7381d",
           nftfi_loanCoordinator: "0x97B55Db860CfB0E25F74d415aC23FA4dd1495C86",
           weth: "0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6",
-          bnpl: "0xDECd2D4Bd416082B8ad1cF6387eefC39Ae02c696",
+          bnpl: "0xE763fD8e81b8aBC7107947c2623de05097984200",
           os_module: "0x37f381F0d024D1107eBBCAbD6280501B3bF88b8D"
         };
         break;
