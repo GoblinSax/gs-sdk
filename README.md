@@ -4,8 +4,6 @@ A javascript library to take loans on NFTs from Goblin Sax. The Goblin Sax SDK r
 
 ![](https://i.imgur.com/NmneTx4.png)
 
-Please note that the SDK is undergoing heavy changes and is in beta. Use at your own risk.
-
 ## Install
 
 > npm i @goblinsax/gs-sdk
@@ -22,19 +20,16 @@ Then build using:
 
 ## Tests
 
-Copy .env-example and create .env. Tests are done on the GOERLI network and makes assumptions about the state of the wallet. After the environment variables are set and assumptions verified, tests can be run using:
-
+Copy .env-example and create .env. Tests are done on the GOERLI network. After the environment variables are set, tests can be run using:
 > npm test
-
-A more advanced test on hardhat fork with every details is in example/forked-loan
 
 ## Example
 
 **examples/example.js:**
-ECMA script for getting the goblin sax whitelist, creating a loan and repaying it.
+A script for using the SDK to take loans
 
-**example/forked-loan:**
-For a hardhat test on the mainnet fork using CommonJS.
+**examples/exampleBnpl.ts:**
+A script for using the SDK to make a BNPL
 
 ## Getting Started
 
