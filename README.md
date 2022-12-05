@@ -1,6 +1,6 @@
 # Goblin Sax SDK
 
-A javascript library to take loans on NFTs from Goblin Sax. The Goblin Sax SDK requires Goblin Sax API Key. [Contact Us](https://discord.com/invite/GS6rvrvb9B) if you don't have it.
+A javascript library to take loans on NFTs from Goblin Sax. The mainnet version of Goblin Sax SDK requires Goblin Sax API Key. [Contact Us](https://discord.com/invite/GS6rvrvb9B) if you don't have it.
 
 ![](https://i.imgur.com/NmneTx4.png)
 
@@ -25,7 +25,7 @@ Copy .env-example and create .env. Tests are done on the GOERLI network. After t
 
 ## Example
 
-**examples/example.js:**
+**examples/example.ts:**
 A script for using the SDK to take loans
 
 **examples/exampleBnpl.ts:**
@@ -38,12 +38,13 @@ An ethers provider, Goblin Sax API key and the current network ("GOERLI" or "MAI
 **ECMA:**
 
     import { GoblinSaxAPI } from "@goblinsax/gs-sdk";
-    let gs = new GoblinSaxAPI(<ethers-provider>, <goblin-sax-api-key>, <MAINNET | GOERLI>)
+    let gs = new GoblinSaxAPI(<ethers-signer>, <goblin-sax-api-key>, <MAINNET | GOERLI>)
 
 **CommonJS:**
 
     const { GoblinSaxAPI } = require("@goblinsax/gs-sdk");
-    let gs = new GoblinSaxAPI(<ethers-provider>, <goblin-sax-api-key>, <MAINNET | GOERLI>)
+    let gs = new GoblinSaxAPI(<ethers-signer>, <goblin-sax-api-key>, <MAINNET | GOERLI>)
+
 
 #### `gs.getWhitelist()`
 
@@ -74,6 +75,11 @@ Returns terms GS provides loan on for that asset
 > ...} }
 
 Price is Goblin Sax's valuation for that asset. Inside the offer dictionary, key is duration GS is willing to provide loans for. LTV and APRs are the list of LTV and APR GS is willing to provide.
+
+Based on this Whitelist and Terms, Goblin Sax SDK Offers two ways of interaction.
+
+## Loans
+These are regular loans as provided by NFTFi that allows users to borrow an NFT for a provided duration.
 
 #### `gs.beginLoan(collection, id, duration, borrowerAddress, principal, apr, referral)`
 
