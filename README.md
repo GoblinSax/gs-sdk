@@ -78,7 +78,7 @@ Price is Goblin Sax's valuation for that asset. Inside the offer dictionary, key
 
 Based on this Whitelist and Terms, Goblin Sax SDK Offers two ways of interaction.
 
-## Loans
+### 1) Loans
 These are regular loans as provided by NFTFi that allows users to borrow an NFT for a provided duration.
 
 #### `gs.beginLoan(collection: string, id: string, duration: string, borrowerAddress: string, principal: string, apr: number): Promise<ethers.ContractTransaction>`
@@ -109,7 +109,7 @@ Returns all active loans done by the user. Alchemy API is used for this purpose 
 
 The loanId to repay from must be passed to create the repayment.
 
-## Buy now, pay later (BNPL)
+### 2) Buy now, pay later (BNPL)
 
 Buy now pay later is a new functionality developed by Goblin sax that allows to buy an asset today and pay for it later on.
 
