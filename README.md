@@ -1,6 +1,6 @@
 # Goblin Sax SDK
 
-A javascript library to take loans on NFTs from Goblin Sax. The Goblin Sax SDK requires Goblin Sax API Key. [Contact Us](https://discord.com/invite/GS6rvrvb9B) if you don't have it.
+A javascript library to take loans on NFTs from Goblin Sax. The mainnet version of Goblin Sax SDK requires Goblin Sax API Key. [Contact Us](https://discord.com/invite/GS6rvrvb9B) if you don't have it.
 
 ![](https://i.imgur.com/NmneTx4.png)
 
@@ -25,7 +25,7 @@ Copy .env-example and create .env. Tests are done on the GOERLI network. After t
 
 ## Example
 
-**examples/example.js:**
+**examples/example.ts:**
 A script for using the SDK to take loans
 
 **examples/exampleBnpl.ts:**
@@ -38,14 +38,15 @@ An ethers provider, Goblin Sax API key and the current network ("GOERLI" or "MAI
 **ECMA:**
 
     import { GoblinSaxAPI } from "@goblinsax/gs-sdk";
-    let gs = new GoblinSaxAPI(<ethers-provider>, <goblin-sax-api-key>, <MAINNET | GOERLI>)
+    let gs = new GoblinSaxAPI(<ethers-signer>, <goblin-sax-api-key>, <MAINNET | GOERLI>)
 
 **CommonJS:**
 
     const { GoblinSaxAPI } = require("@goblinsax/gs-sdk");
-    let gs = new GoblinSaxAPI(<ethers-provider>, <goblin-sax-api-key>, <MAINNET | GOERLI>)
+    let gs = new GoblinSaxAPI(<ethers-signer>, <goblin-sax-api-key>, <MAINNET | GOERLI>)
 
-#### `gs.getWhitelist()`
+
+#### `gs.getWhitelist(): Promise<GS_API_Collections["whitelist"]>`
 
 Returns assets Goblin Sax is currently providing loans on.
 
@@ -55,7 +56,7 @@ Returns assets Goblin Sax is currently providing loans on.
 
 Response is a dictionary of collection address and slug. Once the whitelist is extracted, user's wallet must be viewed to see the assets they own. Refer to example/examples.js for an implementation.
 
-#### `gs.getTerms(collection, id)`
+#### `gs.getTerms(collection: string, id: string): Promise<GS_API_GetLoanTerms["body"]>`
 
 Returns terms GS provides loan on for that asset
 
@@ -75,11 +76,16 @@ Returns terms GS provides loan on for that asset
 
 Price is Goblin Sax's valuation for that asset. Inside the offer dictionary, key is duration GS is willing to provide loans for. LTV and APRs are the list of LTV and APR GS is willing to provide.
 
-#### `gs.beginLoan(collection, id, duration, borrowerAddress, principal, apr, referral)`
+Based on this Whitelist and Terms, Goblin Sax SDK Offers two ways of interaction.
 
-Begin Loan for a given NFT collection id. Duration in minutes, borrower address, Pricipal in WEI, APR in percentage (eg 10) and your ETH to receive the referral comission must be included.
+### 1) Loans
+These are regular loans as provided by NFTFi that allows users to borrow an NFT for a provided duration.
 
-#### `gs.getLoans(ALCHEMY_API)`
+#### `gs.beginLoan(collection: string, id: string, duration: string, borrowerAddress: string, principal: string, apr: number): Promise<ethers.ContractTransaction>`
+
+Begin Loan for a given NFT collection id. Duration in minutes, borrower address, Pricipal in WEI and APR in percentage (eg 10)
+
+#### `gs.getLoans(ALCHEMY_API: string): Promise<GetLoansReturnType>`
 
 Returns all active loans done by the user. Alchemy API is used for this purpose and must be provided.
 **Example:**
@@ -99,11 +105,11 @@ Returns all active loans done by the user. Alchemy API is used for this purpose 
 > ...
 > }
 
-#### `gs.repayLoan(loanId)`
+#### `gs.repayLoan(loanId: ethers.BigNumberish): Promise<void>`
 
 The loanId to repay from must be passed to create the repayment.
 
-## Buy now, pay later (BNPL)
+### 2) Buy now, pay later (BNPL)
 
 Buy now pay later is a new functionality developed by Goblin sax that allows to buy an asset today and pay for it later on.
 
