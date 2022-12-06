@@ -1,6 +1,6 @@
 {
   "name": "@goblinsax/gs-sdk",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "SDK to take loan from Goblin Sax for user's NFT",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -15,7 +15,7 @@
     "typechain": "typechain --target=ethers-v5 ./src/abis/**/*.json --out-dir ./types/typechain/",
     "postinstall": "yarn typechain",
     "prepublish": "yarn build",
-    "test": "mocha",
+    "test": "mocha --require ts-node/register --watch-extensions ts 'tests/*.ts' --timeout 15000000",
     "build": "tsup src/index.ts --format cjs,esm --dts --clean"
   },
   "repository": {
@@ -29,8 +29,11 @@
   },
   "homepage": "https://github.com/GoblinSax/gs-sdk#readme",
   "devDependencies": {
+    "@types/chai": "^4.3.4",
+    "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.9",
     "mocha": "^10.0.0",
+    "ts-node": "^10.9.1",
     "tsup": "^6.3.0",
     "typescript": "^4.8.4"
   },

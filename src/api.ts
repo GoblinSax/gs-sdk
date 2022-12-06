@@ -30,7 +30,7 @@ import {
   GS_API_GetLoanTerms,
   LoanType,
   Version,
-} from "src/types";
+} from "./types";
 
 export class GoblinSaxAPI {
   envConfig: {
@@ -335,13 +335,12 @@ export class GoblinSaxAPI {
   }
 
   async beginLoan(
-    collection,
-    assetId,
-    duration,
-    borrowerAddress,
+    collection: string,
+    assetId: string,
+    duration: string,
+    borrowerAddress: string,
     principal: string,
-    apr,
-    _referral // TODO: not used, should we remove it?
+    apr: number
   ): Promise<ethers.ContractTransaction> {
     const { offer, signature, borrowerSettings } = await this.createOffer(
       collection,

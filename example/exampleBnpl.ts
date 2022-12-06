@@ -8,7 +8,7 @@ dotenv.config();
 */
 
 function promiseTimeout(ms: number) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve, _reject) {
     setTimeout(resolve, ms);
   });
 }
@@ -39,7 +39,7 @@ async function main(version: Version) {
   // https://goerli.etherscan.io/address/0x904490AB5Cd0d7F6E2264b5D34D46a9C1bB30594#writeContract
   // ipfs://QmeSjSinHpPnmXmspMjwiXyN6zS4E9zccariGR3jxcaWtq/SOME-NUMBER or any other metadata
   const COLLECTION_ADDRESS = "0x904490AB5Cd0d7F6E2264b5D34D46a9C1bB30594";
-  const ASSET_ID = "15";
+  const ASSET_ID = "81";
 
   // Get GS terms for the asset.
   const terms: GS_API_GetLoanTerms["body"] = await gs.getTerms(
