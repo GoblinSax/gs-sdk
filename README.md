@@ -46,7 +46,7 @@ An ethers provider, Goblin Sax API key and the current network ("GOERLI" or "MAI
     let gs = new GoblinSaxAPI(<ethers-signer>, <goblin-sax-api-key>, <MAINNET | GOERLI>)
 
 
-#### `gs.getWhitelist()`
+#### `gs.getWhitelist(): Promise<GS_API_Collections["whitelist"]>`
 
 Returns assets Goblin Sax is currently providing loans on.
 
@@ -56,7 +56,7 @@ Returns assets Goblin Sax is currently providing loans on.
 
 Response is a dictionary of collection address and slug. Once the whitelist is extracted, user's wallet must be viewed to see the assets they own. Refer to example/examples.js for an implementation.
 
-#### `gs.getTerms(collection, id)`
+#### `gs.getTerms(collection: string, id: string): Promise<GS_API_GetLoanTerms["body"]>`
 
 Returns terms GS provides loan on for that asset
 
@@ -81,11 +81,11 @@ Based on this Whitelist and Terms, Goblin Sax SDK Offers two ways of interaction
 ## Loans
 These are regular loans as provided by NFTFi that allows users to borrow an NFT for a provided duration.
 
-#### `gs.beginLoan(collection, id, duration, borrowerAddress, principal, apr, referral)`
+#### `gs.beginLoan(collection: string, id: string, duration: string, borrowerAddress: string, principal: string, apr: number): Promise<ethers.ContractTransaction>`
 
-Begin Loan for a given NFT collection id. Duration in minutes, borrower address, Pricipal in WEI, APR in percentage (eg 10) and your ETH to receive the referral comission must be included.
+Begin Loan for a given NFT collection id. Duration in minutes, borrower address, Pricipal in WEI and APR in percentage (eg 10)
 
-#### `gs.getLoans(ALCHEMY_API)`
+#### `gs.getLoans(ALCHEMY_API: string): Promise<GetLoansReturnType>`
 
 Returns all active loans done by the user. Alchemy API is used for this purpose and must be provided.
 **Example:**
@@ -105,7 +105,7 @@ Returns all active loans done by the user. Alchemy API is used for this purpose 
 > ...
 > }
 
-#### `gs.repayLoan(loanId)`
+#### `gs.repayLoan(loanId: ethers.BigNumberish): Promise<void>`
 
 The loanId to repay from must be passed to create the repayment.
 
