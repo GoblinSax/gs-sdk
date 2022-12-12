@@ -26,6 +26,7 @@ import {
   AlchemyGetLoans,
   GetLoansReturnType,
   GS_API_Collections,
+  GS_API_VaultData,
   GS_API_CreateOfferResponse,
   GS_API_GetLoanTerms,
   LoanType,
@@ -141,6 +142,14 @@ export class GoblinSaxAPI {
         `${this.envConfig.gs_api}/api/whitelist`
       )
     ).data.whitelist;
+  }
+
+  async getVaultData(): Promise<GS_API_VaultData["vaultData"]> {
+    return (
+      await axios.get<GS_API_VaultData>(
+        `${this.envConfig.gs_api}/api/vaultData`
+      )
+    ).data.vaultData;
   }
 
   async getTerms(

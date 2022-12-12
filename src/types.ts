@@ -74,6 +74,14 @@ export type GS_API_Collections = {
   }[];
 };
 
+export type GS_API_VaultData = {
+  vaultData: {
+    strategy: string;
+    vault: string;
+    privatekey: string;
+  }[];
+}
+
 export type AlchemyGetLoans = {
   ownedNfts: {
     contract: {
