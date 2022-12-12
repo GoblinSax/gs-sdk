@@ -4603,6 +4603,11 @@ var GoblinSaxAPI = class {
       `${this.envConfig.gs_api}/api/whitelist`
     )).data.whitelist;
   }
+  async getVaultData() {
+    return (await axios.get(
+      `${this.envConfig.gs_api}/api/vaultData`
+    )).data.vaultData;
+  }
   async getTerms(collection, assetId) {
     let res = await axios.get(
       `${this.envConfig.gs_api}/api/get-loan-terms?address=${collection}&id=${assetId}`,
@@ -4748,7 +4753,7 @@ var GoblinSaxAPI = class {
       }
     };
   }
-  async beginLoan(collection, assetId, duration, borrowerAddress, principal, apr, _referral) {
+  async beginLoan(collection, assetId, duration, borrowerAddress, principal, apr) {
     const { offer, signature, borrowerSettings } = await this.createOffer(
       collection,
       assetId,

@@ -10,14 +10,14 @@ interface TypedEventFilter<_TEvent extends TypedEvent> extends EventFilter {
 interface TypedListener<TEvent extends TypedEvent> {
     (...listenerArg: [...__TypechainArgsArray<TEvent>, TEvent]): void;
 }
-declare type __TypechainArgsArray<T> = T extends TypedEvent<infer U> ? U : never;
+type __TypechainArgsArray<T> = T extends TypedEvent<infer U> ? U : never;
 interface OnEvent<TRes> {
     <TEvent extends TypedEvent>(eventFilter: TypedEventFilter<TEvent>, listener: TypedListener<TEvent>): TRes;
     (eventName: string, listener: Listener): TRes;
 }
-declare type PromiseOrValue<T> = T | Promise<T>;
+type PromiseOrValue<T> = T | Promise<T>;
 
-declare type OfferStruct = {
+type OfferStruct = {
     loanPrincipalAmount: PromiseOrValue<BigNumberish>;
     maximumRepaymentAmount: PromiseOrValue<BigNumberish>;
     nftCollateralId: PromiseOrValue<BigNumberish>;
@@ -27,7 +27,7 @@ declare type OfferStruct = {
     loanERC20Denomination: PromiseOrValue<string>;
     referrer: PromiseOrValue<string>;
 };
-declare type OfferStructOutput = [
+type OfferStructOutput = [
     BigNumber,
     BigNumber,
     BigNumber,
@@ -46,23 +46,23 @@ declare type OfferStructOutput = [
     loanERC20Denomination: string;
     referrer: string;
 };
-declare type SignatureStruct = {
+type SignatureStruct = {
     nonce: PromiseOrValue<BigNumberish>;
     expiry: PromiseOrValue<BigNumberish>;
     signer: PromiseOrValue<string>;
     signature: PromiseOrValue<BytesLike>;
 };
-declare type SignatureStructOutput = [BigNumber, BigNumber, string, string] & {
+type SignatureStructOutput = [BigNumber, BigNumber, string, string] & {
     nonce: BigNumber;
     expiry: BigNumber;
     signer: string;
     signature: string;
 };
-declare type BorrowerSettingsStruct = {
+type BorrowerSettingsStruct = {
     revenueSharePartner: PromiseOrValue<string>;
     referralFeeInBasisPoints: PromiseOrValue<BigNumberish>;
 };
-declare type BorrowerSettingsStructOutput = [string, number] & {
+type BorrowerSettingsStructOutput = [string, number] & {
     revenueSharePartner: string;
     referralFeeInBasisPoints: number;
 };
@@ -180,60 +180,60 @@ interface BnplExecutedEventObject {
     obligationReceipt: string;
     smartNftId: BigNumber;
 }
-declare type BnplExecutedEvent = TypedEvent<[
+type BnplExecutedEvent = TypedEvent<[
     string,
     string,
     BigNumber,
     string,
     BigNumber
 ], BnplExecutedEventObject>;
-declare type BnplExecutedEventFilter = TypedEventFilter<BnplExecutedEvent>;
+type BnplExecutedEventFilter = TypedEventFilter<BnplExecutedEvent>;
 interface ModuleAllowanceEventObject {
     module: string;
     allowed: boolean;
 }
-declare type ModuleAllowanceEvent = TypedEvent<[
+type ModuleAllowanceEvent = TypedEvent<[
     string,
     boolean
 ], ModuleAllowanceEventObject>;
-declare type ModuleAllowanceEventFilter = TypedEventFilter<ModuleAllowanceEvent>;
+type ModuleAllowanceEventFilter = TypedEventFilter<ModuleAllowanceEvent>;
 interface OwnershipTransferStartedEventObject {
     previousOwner: string;
     newOwner: string;
 }
-declare type OwnershipTransferStartedEvent = TypedEvent<[
+type OwnershipTransferStartedEvent = TypedEvent<[
     string,
     string
 ], OwnershipTransferStartedEventObject>;
-declare type OwnershipTransferStartedEventFilter = TypedEventFilter<OwnershipTransferStartedEvent>;
+type OwnershipTransferStartedEventFilter = TypedEventFilter<OwnershipTransferStartedEvent>;
 interface OwnershipTransferredEventObject$1 {
     previousOwner: string;
     newOwner: string;
 }
-declare type OwnershipTransferredEvent$1 = TypedEvent<[
+type OwnershipTransferredEvent$1 = TypedEvent<[
     string,
     string
 ], OwnershipTransferredEventObject$1>;
-declare type OwnershipTransferredEventFilter$1 = TypedEventFilter<OwnershipTransferredEvent$1>;
+type OwnershipTransferredEventFilter$1 = TypedEventFilter<OwnershipTransferredEvent$1>;
 interface SetAllowedMarketModulesEventObject {
     module: string;
 }
-declare type SetAllowedMarketModulesEvent = TypedEvent<[
+type SetAllowedMarketModulesEvent = TypedEvent<[
     string
 ], SetAllowedMarketModulesEventObject>;
-declare type SetAllowedMarketModulesEventFilter = TypedEventFilter<SetAllowedMarketModulesEvent>;
+type SetAllowedMarketModulesEventFilter = TypedEventFilter<SetAllowedMarketModulesEvent>;
 interface SetFeeReceiverEventObject {
     feeReceiver: string;
 }
-declare type SetFeeReceiverEvent = TypedEvent<[
+type SetFeeReceiverEvent = TypedEvent<[
     string
 ], SetFeeReceiverEventObject>;
-declare type SetFeeReceiverEventFilter = TypedEventFilter<SetFeeReceiverEvent>;
+type SetFeeReceiverEventFilter = TypedEventFilter<SetFeeReceiverEvent>;
 interface SetLoanCapEventObject {
     loanCap: BigNumber;
 }
-declare type SetLoanCapEvent = TypedEvent<[BigNumber], SetLoanCapEventObject>;
-declare type SetLoanCapEventFilter = TypedEventFilter<SetLoanCapEvent>;
+type SetLoanCapEvent = TypedEvent<[BigNumber], SetLoanCapEventObject>;
+type SetLoanCapEventFilter = TypedEventFilter<SetLoanCapEvent>;
 declare namespace Bnpl {
     type ServiceFeeStruct = {
         amount: PromiseOrValue<BigNumberish>;
@@ -578,23 +578,23 @@ interface ApprovalEventObject$1 {
     spender: string;
     value: BigNumber;
 }
-declare type ApprovalEvent$1 = TypedEvent<[
+type ApprovalEvent$1 = TypedEvent<[
     string,
     string,
     BigNumber
 ], ApprovalEventObject$1>;
-declare type ApprovalEventFilter$1 = TypedEventFilter<ApprovalEvent$1>;
+type ApprovalEventFilter$1 = TypedEventFilter<ApprovalEvent$1>;
 interface TransferEventObject$1 {
     from: string;
     to: string;
     value: BigNumber;
 }
-declare type TransferEvent$1 = TypedEvent<[
+type TransferEvent$1 = TypedEvent<[
     string,
     string,
     BigNumber
 ], TransferEventObject$1>;
-declare type TransferEventFilter$1 = TypedEventFilter<TransferEvent$1>;
+type TransferEventFilter$1 = TypedEventFilter<TransferEvent$1>;
 interface Erc20 extends BaseContract {
     connect(signerOrProvider: Signer | Provider | string): this;
     attach(addressOrName: string): this;
@@ -978,19 +978,19 @@ interface NftfiInterface extends utils.Interface {
 interface AdminFeeUpdatedEventObject {
     newAdminFee: number;
 }
-declare type AdminFeeUpdatedEvent = TypedEvent<[
+type AdminFeeUpdatedEvent = TypedEvent<[
     number
 ], AdminFeeUpdatedEventObject>;
-declare type AdminFeeUpdatedEventFilter = TypedEventFilter<AdminFeeUpdatedEvent>;
+type AdminFeeUpdatedEventFilter = TypedEventFilter<AdminFeeUpdatedEvent>;
 interface ERC20PermitEventObject {
     erc20Contract: string;
     isPermitted: boolean;
 }
-declare type ERC20PermitEvent = TypedEvent<[
+type ERC20PermitEvent = TypedEvent<[
     string,
     boolean
 ], ERC20PermitEventObject>;
-declare type ERC20PermitEventFilter = TypedEventFilter<ERC20PermitEvent>;
+type ERC20PermitEventFilter = TypedEventFilter<ERC20PermitEvent>;
 interface LoanLiquidatedEventObject {
     loanId: number;
     borrower: string;
@@ -1001,7 +1001,7 @@ interface LoanLiquidatedEventObject {
     loanLiquidationDate: BigNumber;
     nftCollateralContract: string;
 }
-declare type LoanLiquidatedEvent = TypedEvent<[
+type LoanLiquidatedEvent = TypedEvent<[
     number,
     string,
     string,
@@ -1011,7 +1011,7 @@ declare type LoanLiquidatedEvent = TypedEvent<[
     BigNumber,
     string
 ], LoanLiquidatedEventObject>;
-declare type LoanLiquidatedEventFilter = TypedEventFilter<LoanLiquidatedEvent>;
+type LoanLiquidatedEventFilter = TypedEventFilter<LoanLiquidatedEvent>;
 interface LoanRenegotiatedEventObject {
     loanId: number;
     borrower: string;
@@ -1021,7 +1021,7 @@ interface LoanRenegotiatedEventObject {
     renegotiationFee: BigNumber;
     renegotiationAdminFee: BigNumber;
 }
-declare type LoanRenegotiatedEvent = TypedEvent<[
+type LoanRenegotiatedEvent = TypedEvent<[
     number,
     string,
     string,
@@ -1030,7 +1030,7 @@ declare type LoanRenegotiatedEvent = TypedEvent<[
     BigNumber,
     BigNumber
 ], LoanRenegotiatedEventObject>;
-declare type LoanRenegotiatedEventFilter = TypedEventFilter<LoanRenegotiatedEvent>;
+type LoanRenegotiatedEventFilter = TypedEventFilter<LoanRenegotiatedEvent>;
 interface LoanRepaidEventObject {
     loanId: number;
     borrower: string;
@@ -1044,7 +1044,7 @@ interface LoanRepaidEventObject {
     nftCollateralContract: string;
     loanERC20Denomination: string;
 }
-declare type LoanRepaidEvent = TypedEvent<[
+type LoanRepaidEvent = TypedEvent<[
     number,
     string,
     string,
@@ -1057,7 +1057,7 @@ declare type LoanRepaidEvent = TypedEvent<[
     string,
     string
 ], LoanRepaidEventObject>;
-declare type LoanRepaidEventFilter = TypedEventFilter<LoanRepaidEvent>;
+type LoanRepaidEventFilter = TypedEventFilter<LoanRepaidEvent>;
 interface LoanStartedEventObject {
     loanId: number;
     borrower: string;
@@ -1065,40 +1065,40 @@ interface LoanStartedEventObject {
     loanTerms: LoanData.LoanTermsStructOutput;
     loanExtras: LoanData.LoanExtrasStructOutput;
 }
-declare type LoanStartedEvent = TypedEvent<[
+type LoanStartedEvent = TypedEvent<[
     number,
     string,
     string,
     LoanData.LoanTermsStructOutput,
     LoanData.LoanExtrasStructOutput
 ], LoanStartedEventObject>;
-declare type LoanStartedEventFilter = TypedEventFilter<LoanStartedEvent>;
+type LoanStartedEventFilter = TypedEventFilter<LoanStartedEvent>;
 interface MaximumLoanDurationUpdatedEventObject {
     newMaximumLoanDuration: BigNumber;
 }
-declare type MaximumLoanDurationUpdatedEvent = TypedEvent<[
+type MaximumLoanDurationUpdatedEvent = TypedEvent<[
     BigNumber
 ], MaximumLoanDurationUpdatedEventObject>;
-declare type MaximumLoanDurationUpdatedEventFilter = TypedEventFilter<MaximumLoanDurationUpdatedEvent>;
+type MaximumLoanDurationUpdatedEventFilter = TypedEventFilter<MaximumLoanDurationUpdatedEvent>;
 interface OwnershipTransferredEventObject {
     previousOwner: string;
     newOwner: string;
 }
-declare type OwnershipTransferredEvent = TypedEvent<[
+type OwnershipTransferredEvent = TypedEvent<[
     string,
     string
 ], OwnershipTransferredEventObject>;
-declare type OwnershipTransferredEventFilter = TypedEventFilter<OwnershipTransferredEvent>;
+type OwnershipTransferredEventFilter = TypedEventFilter<OwnershipTransferredEvent>;
 interface PausedEventObject {
     account: string;
 }
-declare type PausedEvent = TypedEvent<[string], PausedEventObject>;
-declare type PausedEventFilter = TypedEventFilter<PausedEvent>;
+type PausedEvent = TypedEvent<[string], PausedEventObject>;
+type PausedEventFilter = TypedEventFilter<PausedEvent>;
 interface UnpausedEventObject {
     account: string;
 }
-declare type UnpausedEvent = TypedEvent<[string], UnpausedEventObject>;
-declare type UnpausedEventFilter = TypedEventFilter<UnpausedEvent>;
+type UnpausedEvent = TypedEvent<[string], UnpausedEventObject>;
+type UnpausedEventFilter = TypedEventFilter<UnpausedEvent>;
 interface Nftfi extends BaseContract {
     connect(signerOrProvider: Signer | Provider | string): this;
     attach(addressOrName: string): this;
@@ -1717,67 +1717,67 @@ interface ApprovalEventObject {
     approved: string;
     tokenId: BigNumber;
 }
-declare type ApprovalEvent = TypedEvent<[
+type ApprovalEvent = TypedEvent<[
     string,
     string,
     BigNumber
 ], ApprovalEventObject>;
-declare type ApprovalEventFilter = TypedEventFilter<ApprovalEvent>;
+type ApprovalEventFilter = TypedEventFilter<ApprovalEvent>;
 interface ApprovalForAllEventObject {
     owner: string;
     operator: string;
     approved: boolean;
 }
-declare type ApprovalForAllEvent = TypedEvent<[
+type ApprovalForAllEvent = TypedEvent<[
     string,
     string,
     boolean
 ], ApprovalForAllEventObject>;
-declare type ApprovalForAllEventFilter = TypedEventFilter<ApprovalForAllEvent>;
+type ApprovalForAllEventFilter = TypedEventFilter<ApprovalForAllEvent>;
 interface RoleAdminChangedEventObject {
     role: string;
     previousAdminRole: string;
     newAdminRole: string;
 }
-declare type RoleAdminChangedEvent = TypedEvent<[
+type RoleAdminChangedEvent = TypedEvent<[
     string,
     string,
     string
 ], RoleAdminChangedEventObject>;
-declare type RoleAdminChangedEventFilter = TypedEventFilter<RoleAdminChangedEvent>;
+type RoleAdminChangedEventFilter = TypedEventFilter<RoleAdminChangedEvent>;
 interface RoleGrantedEventObject {
     role: string;
     account: string;
     sender: string;
 }
-declare type RoleGrantedEvent = TypedEvent<[
+type RoleGrantedEvent = TypedEvent<[
     string,
     string,
     string
 ], RoleGrantedEventObject>;
-declare type RoleGrantedEventFilter = TypedEventFilter<RoleGrantedEvent>;
+type RoleGrantedEventFilter = TypedEventFilter<RoleGrantedEvent>;
 interface RoleRevokedEventObject {
     role: string;
     account: string;
     sender: string;
 }
-declare type RoleRevokedEvent = TypedEvent<[
+type RoleRevokedEvent = TypedEvent<[
     string,
     string,
     string
 ], RoleRevokedEventObject>;
-declare type RoleRevokedEventFilter = TypedEventFilter<RoleRevokedEvent>;
+type RoleRevokedEventFilter = TypedEventFilter<RoleRevokedEvent>;
 interface TransferEventObject {
     from: string;
     to: string;
     tokenId: BigNumber;
 }
-declare type TransferEvent = TypedEvent<[
+type TransferEvent = TypedEvent<[
     string,
     string,
     BigNumber
 ], TransferEventObject>;
-declare type TransferEventFilter = TypedEventFilter<TransferEvent>;
+type TransferEventFilter = TypedEventFilter<TransferEvent>;
 interface NftfiNoteReceipt extends BaseContract {
     connect(signerOrProvider: Signer | Provider | string): this;
     attach(addressOrName: string): this;
@@ -2075,7 +2075,7 @@ interface NftfiNoteReceipt extends BaseContract {
     };
 }
 
-declare type GS_API_CreateOfferResponse = {
+type GS_API_CreateOfferResponse = {
     success: boolean;
     body: {
         result: {
@@ -2130,7 +2130,7 @@ declare type GS_API_CreateOfferResponse = {
     reason?: string;
     message?: string;
 };
-declare type GS_API_GetLoanTerms = {
+type GS_API_GetLoanTerms = {
     success: boolean;
     body: {
         maxLoan: number;
@@ -2143,13 +2143,20 @@ declare type GS_API_GetLoanTerms = {
     };
     message?: string;
 };
-declare type GS_API_Collections = {
+type GS_API_Collections = {
     whitelist: {
         slug: string;
         asset_contract: string;
     }[];
 };
-declare type AlchemyGetLoans = {
+type GS_API_VaultData = {
+    vaultData: {
+        strategy: string;
+        vault: string;
+        privatekey: string;
+    }[];
+};
+type AlchemyGetLoans = {
     ownedNfts: {
         contract: {
             address: string;
@@ -2168,7 +2175,7 @@ declare enum LoanType {
     NFTfi = 0,
     BNPL = 1
 }
-declare type GetLoansReturnType = Record<string, {
+type GetLoansReturnType = Record<string, {
     loanType: LoanType;
     loanInfo: Awaited<ReturnType<Nftfi["loanIdToLoan"]>>;
 }>;
@@ -2198,6 +2205,7 @@ declare class GoblinSaxAPI {
     gs_lender: string;
     constructor(signer: ethers.providers.JsonRpcSigner, apiKey: string, version: Version);
     getWhitelist(): Promise<GS_API_Collections["whitelist"]>;
+    getVaultData(): Promise<GS_API_VaultData["vaultData"]>;
     getTerms(collection: string, assetId: string): Promise<GS_API_GetLoanTerms["body"]>;
     repayLoan(loanId: ethers.BigNumberish): Promise<void>;
     getLoans(alchemyApiKey: string): Promise<GetLoansReturnType>;
@@ -2236,7 +2244,7 @@ declare class GoblinSaxAPI {
             signature: string;
         };
     }>;
-    beginLoan(collection: any, assetId: any, duration: any, borrowerAddress: any, principal: string, apr: any, _referral: any): Promise<ethers.ContractTransaction>;
+    beginLoan(collection: string, assetId: string, duration: string, borrowerAddress: string, principal: string, apr: number): Promise<ethers.ContractTransaction>;
     getOSListing(collection: string, assetId: string): Promise<any>;
     getBnplLoanCap(marketPrice: string): Promise<BigNumber>;
     bnplAllowance(token: string, marketPrice: string, principal: string, gsFee: string): Promise<{
@@ -2247,4 +2255,4 @@ declare class GoblinSaxAPI {
     executeBnpl(collection: string, assetId: string, marketPrice: BigNumberish, assetType: "ERC721" | "ERC1155", duration: string, borrowerAddress: string, principal: string, apr: number, buyData: string, module: string): Promise<ethers.ContractTransaction>;
 }
 
-export { AlchemyGetLoans, GS_API_Collections, GS_API_CreateOfferResponse, GS_API_GetLoanTerms, GetLoansReturnType, GoblinSaxAPI, LoanType, Version };
+export { AlchemyGetLoans, GS_API_Collections, GS_API_CreateOfferResponse, GS_API_GetLoanTerms, GS_API_VaultData, GetLoansReturnType, GoblinSaxAPI, LoanType, Version };
