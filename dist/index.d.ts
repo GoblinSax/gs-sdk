@@ -2236,7 +2236,7 @@ declare class GoblinSaxAPI {
             signature: string;
         };
     }>;
-    beginLoan(collection: any, assetId: any, duration: any, borrowerAddress: any, principal: string, apr: any, _referral: any): Promise<ethers.ContractTransaction>;
+    beginLoan(collection: string, assetId: string, duration: string, borrowerAddress: string, principal: string, apr: number): Promise<ethers.ContractTransaction>;
     getOSListing(collection: string, assetId: string): Promise<any>;
     getBnplLoanCap(marketPrice: string): Promise<BigNumber>;
     bnplAllowance(token: string, marketPrice: string, principal: string, gsFee: string): Promise<{

@@ -4594,7 +4594,7 @@ var GoblinSaxAPI = class {
           nftfi_loanContract: "0x77097f421CEb2454eB5F77898d25159ff3C7381d",
           nftfi_loanCoordinator: "0x97B55Db860CfB0E25F74d415aC23FA4dd1495C86",
           weth: "0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6",
-          bnpl: "0xE763fD8e81b8aBC7107947c2623de05097984200",
+          bnpl: "0x7F3Df4948A55eFa1421828dd346b2bb81A8c00F9",
           os_module: "0x37f381F0d024D1107eBBCAbD6280501B3bF88b8D"
         };
         break;
@@ -4781,7 +4781,7 @@ var GoblinSaxAPI = class {
       }
     };
   }
-  async beginLoan(collection, assetId, duration, borrowerAddress, principal, apr, _referral) {
+  async beginLoan(collection, assetId, duration, borrowerAddress, principal, apr) {
     const { offer, signature, borrowerSettings } = await this.createOffer(
       collection,
       assetId,
