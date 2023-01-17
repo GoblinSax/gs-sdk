@@ -68,6 +68,7 @@ export type GS_API_GetLoanTerms = {
 };
 
 export type GS_API_Collections = {
+  success: boolean;
   whitelist: {
     slug: string;
     asset_contract: string;

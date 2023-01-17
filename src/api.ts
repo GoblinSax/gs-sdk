@@ -65,7 +65,7 @@ export class GoblinSaxAPI {
     switch (version) {
       case Version.MAINNET:
         this.envConfig = {
-          gs_api: "https://api.goblinsax.xyz/collections",
+          gs_api: "https://mainnet-api.goblinsax.xyz",
           os_api: "https://api.opensea.io/v2/orders/goerli/seaport",
           alchemy_api: "https://eth-mainnet.alchemyapi.io",
           nftfi: "0x8252df1d8b29057d1afe3062bf5a64d503152bc8",
@@ -102,7 +102,7 @@ export class GoblinSaxAPI {
     this.signer = signer;
     this.apiKey = apiKey;
     this.version = version;
-    this.gs_lender = "0xb66284947F9A35bD9FA893D444F19033FeBdA4A1";
+    this.gs_lender = "0xC6a6f43d5D52C855EBE1f825C717937A7b901732";
 
     this.nftfi_contract = new ethers.Contract(
       this.envConfig.nftfi,
@@ -136,11 +136,13 @@ export class GoblinSaxAPI {
   }
 
   async getWhitelist(): Promise<GS_API_Collections["whitelist"]> {
-    return (
-      await axios.get<GS_API_Collections>(
-        `${this.envConfig.gs_api}/api/whitelist`
-      )
-    ).data.whitelist;
+
+    let res = await axios.get(
+      `${this.envConfig.gs_api}/api/whitelist`,
+      { headers: { "x-api-key": this.apiKey } }
+    );
+
+    return (res).data.whitelist;
   }
 
   async getTerms(
