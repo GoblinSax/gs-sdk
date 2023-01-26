@@ -15,7 +15,7 @@ let signer = new ethers.Wallet(process.env.ETH_KEY as string, provider);
 let gs = new GoblinSaxAPI(signer as any, process.env.MAINNET_API as string, Version.MAINNET);
 
 
-describe('API Tests', () => {
+describe('Mainnet Tests', () => {
 
   it('Whitelist', async () => {
     let whitelist = await gs.getWhitelist()

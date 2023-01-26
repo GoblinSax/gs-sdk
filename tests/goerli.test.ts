@@ -15,7 +15,7 @@ let signer = new ethers.Wallet(process.env.ETH_KEY as string, provider);
 let gs = new GoblinSaxAPI(signer as any, "", Version.GOERLI);
 
 
-describe('API Tests', () => {
+describe('Goerli Tests', () => {
 
   it('Whitelist', async () => {
     let whitelist = await gs.getWhitelist()
