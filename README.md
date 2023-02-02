@@ -115,11 +115,11 @@ The loanId to repay from must be passed to create the repayment.
 
 #### `gs.bridgeFunds(amount: String): Promise<void>`
 
-The amount of WETH to bridge to arbitrum. If you are primarily a L2 protocol this function can be used to bridge the funds to a different network once the loan starts and users wallet receives ETH in the mainnet
+The amount of WETH to bridge to arbitrum. If you are primarily a L2 protocol, this function can be used to bridge the funds to a different network once the loan starts and the user's wallet receives ETH in the mainnet
 
 #### `gs.bridgeStatus(txHash: String, bridge: String): Promise<void>`
 
-Shows the status of bridging. It returns DONE, FAILED or PENDING. It should be called with the responses from bridgeFunds function
+Shows the status of bridging. It returns DONE, FAILED, or PENDING. It should be called with the responses from bridgeFunds function
 
 
 ### 2) Buy now, pay later (BNPL)
