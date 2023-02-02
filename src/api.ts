@@ -145,6 +145,55 @@ export class GoblinSaxAPI {
     return (res).data.whitelist;
   }
 
+  async bridgeFunds(
+    fromAmount: string, 
+    fromChain: string = 'ETH', 
+    toChain: string = 'ARB', 
+    fromToken: string = 'WETH', 
+    toToken: string = 'ETH'
+  ): Promise<any> {
+
+    let fromAddress = await this.signer.getAddress()
+
+    let params = {
+      params: {
+        fromChain,
+        toChain,
+        fromToken,
+        toToken,
+        fromAmount,
+        fromAddress
+      }
+    }
+
+    const result = await axios.get('https://li.quest/v1/quote', params);
+    let quote = result.data;
+
+    const erc20 = new ethers.Contract(quote.action.fromToken.address, ERC20_ABI, this.signer);
+    const allowance = await erc20.allowance(await this.signer.getAddress(), quote.estimate.approvalAddress);
+
+    if (allowance.lt(fromAmount)) {
+      const approveTx = await erc20.approve(quote.estimate.approvalAddress, fromAmount);
+      await approveTx.wait();
+    }    
+
+    const tx = await this.signer.sendTransaction(quote.transactionRequest);
+    return [tx.hash, quote.tool]
+  }
+
+  async bridgeStatus(txHash: any, bridge: any, fromChain: string = 'ETH', toChain: string = 'ARB'): Promise<any> {
+    const result = await axios.get(`https://li.quest/v1/status`, {
+      params: {
+          bridge,
+          fromChain,
+          toChain,
+          txHash,
+      }
+    });
+    return result.data; //returns 'DONE' or 'FAILED' in .status
+
+  }
+
   async getTerms(
     collection: string,
     assetId: string

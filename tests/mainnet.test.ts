@@ -27,4 +27,5 @@ describe('Mainnet Tests', () => {
     let terms = await gs.getTerms('0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d', '4255')
     assert.equal(terms['offers']['30'].length > 1, true)
   })
+
 })
