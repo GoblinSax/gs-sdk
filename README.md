@@ -28,6 +28,9 @@ Copy .env-example and create .env. Tests are done on the GOERLI network. After t
 **examples/example.ts:**
 A script for using the SDK to take loans
 
+**examples/example_bridging.ts:**
+A script for using the SDK to bridge WETH to arbitrum
+
 **examples/exampleBnpl.ts:**
 A script for using the SDK to make a BNPL
 
@@ -108,6 +111,16 @@ Returns all active loans done by the user. Alchemy API is used for this purpose 
 #### `gs.repayLoan(loanId: ethers.BigNumberish): Promise<void>`
 
 The loanId to repay from must be passed to create the repayment.
+
+
+#### `gs.bridgeFunds(amount: String): Promise<void>`
+
+The amount of WETH to bridge to arbitrum. If you are primarily a L2 protocol this function can be used to bridge the funds to a different network once the loan starts and users wallet receives ETH in the mainnet
+
+#### `gs.bridgeStatus(txHash: String, bridge: String): Promise<void>`
+
+Shows the status of bridging. It returns DONE, FAILED or PENDING. It should be called with the responses from bridgeFunds function
+
 
 ### 2) Buy now, pay later (BNPL)
 
